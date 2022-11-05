@@ -1,15 +1,37 @@
 # Exercices pratiques sur la classification supervisée, module 3 du cours de Science des données 3
 
-## Avant-propos
+## Introduction
 
-Les consignes pour ces exercices sont susceptibles de changer. N'hésitez pas à vérifier le lien suivant afin de voir les modifications éventuelles depuis que vous avez accepté votre assignation : <https://github.com/BioDataScience-Course/C03Ia_cardiovascular>
+Les maladies cardiovasculaires font partie des maladies les plus mortelles au monde. Il est de ce fait important de les détecter rapidement.
 
 ## Objectif
 
-Ce projet est un projet court et cadré. Ce dernier doit être terminé pour la fin du module 3.
+Ce projet est un projet **individuel**, **cadré** et d'une durée maximale de **2h**.
 
-- Au sein du fichier `cardio_metrique.rmd`, complétez les zones manquantes.
-- Au sein du fichier `cardio_roc.rmd`, complétez les zones manquantes.
-- Au sein du fichier `cardio_nnet_svm.rmd`, complétez les zones manquantes.
+Dans ce projet, vous devrez :
 
-Dans tous les cas, compilez les versions HTML et vérifiez qu'il n'y a pas de problèmes. **Les trois documents doivent être compilables sans erreurs à la fin de l'exercice !**
+-   Modifier les proportions de classes dans un set d'apprentissage afin d'optimiser un classifieur grâce aux probabilités *a priori* et aux probabilités *a posteriori*
+
+-   Entraîner et optimiser quatre classifieurs différents
+
+-   Comparer les classifieurs et choisir le meilleur
+
+## Consignes
+
+Commencez ce projet par compléter les zones manquantes au sein du fichier `cardio_proportions.Rmd` (1h maximum). Ensuite, complétez le fichier `cardio_optim.Rmd`. Ces fichiers se trouvent dans le dossier `docs/`
+
+Assurez-vous à la fin que vous pouvez compiler une version HTML des fichiers `docs/cardio_proportions.Rmd` et `docs/cardio_optim.Rmd` (bouton 'Knit') sans erreurs. Sinon, corrigez-les avant soumission finale. N'utilisez pas l'argument echo=FALSE dans vos chunks. Le code R qui génère les résultats doit rester visible dans la version HTML. Vérifiez que votre dernier commit + push est bien enregistré sur GitHub à la fin de l'exercice.
+
+## Informations sur les données
+
+Les données employées sont un sous-ensemble d'un tableau de données nommées cardio_train.csv qui comprend 70000 observations. Ces données ont été mises à disposition sur le site kaggle sous le nom [*Cardiovascular Disease dataset*](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) par Svetlana Ulianova. Aucune précision sur les auteurs et la licence n’est pas disponible. Des métadonnées sont néanmoins mises à disposition.
+
+## Notes
+
+### Plagiat
+
+N'oubliez pas que le plagiat est interdit. Ce projet est individuel. Si jamais vous êtes bloqué et que vous avez fait appel ponctuellement à l'aide d'un de vos collègues, vous devez l'indiquer à l'endroit concerné. On cite généralement un élément venant de quelqu'un d'autre comme (John Doe, comm. pers.) pour "communication personnelle". Citez vos sources. Les différents projets seront comparés pour détecter les copies non renseignées.
+
+### Template
+
+Ce projet est associé au template suivant : <https://github.com/BioDataScience-Course/C03Ia_cardiovascular>
