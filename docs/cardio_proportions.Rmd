@@ -1,5 +1,5 @@
 ---
-title: "Maladies cardiovasculaires (rforest)"
+title: "Maladies cardiovasculaires"
 subtitle: "Métriques et proportions"
 author: '___'
 date: "___"
@@ -12,11 +12,11 @@ output: html_document
 
 <!--# Ce document est un carnet de notes. Il est par conséquent moins formel qu'un rapport. Vous pouvez structurer vos interprétations sous la forme de liste.-->
 
-# introduction et but
+# Introduction et but
 
 Les maladies cardiovasculaires font partie des maladies les plus mortelles au monde. Il est de ce fait impératif de les étudier et de les détecter le plus rapidement possible.
 
-L'objectif est de proposer une classifieur optimisé afin de détecter un maximum des personnes malades.
+L'objectif est de proposer une classifieur optimisé afin de détecter un maximum des personnes atteintes de maladies cardiovaculaires.
 
 # Analyses
 
@@ -24,13 +24,15 @@ L'objectif est de proposer une classifieur optimisé afin de détecter un maximu
 SciViews::R("ml")
 ```
 
-<!--% Importez le jeu de données `cardio.rds` et nommez cet objet `cardio`. Assurez-vous que chaque variable soit dans un format correct. -->
+<!--% Importez le jeu de données `cardio.rds` et nommez cet objet `cardio`. Examinez votre tableau et les sorties du code ci-dessous un fois complété. -->
 
 ```{r import}
-
+cardio <- 
+cardio$id <- NULL
+skimr::skim(cardio)
 ```
 
-<!--% Utilisez la fonction `table()` afin de mettre en évidence le nombre de niveau de la variable `cardio` ainsi que le nombre d'occurences par niveau de cette variable. -->
+<!--% Utilisez la fonction `table()` afin de mettre en évidence le nombre de niveaux de la variable `cardio` ainsi que le nombre d'occurences par niveau de cette variable. -->
 
 ```{r table}
 
@@ -52,40 +54,52 @@ SciViews::R("ml")
 
 ## Classifeur initial
 
-<!--% Entraînez un classifieur par forêt aléatoire sur cardio afin de prédire la variable `cardio` et optimisez-les paramètres de ce classifieurs. Utilisez la validation croisée 5 fois.-->
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio afin de prédire la variable `cardio` et optimisez-les paramètres de ce classifieurs. Utilisez la validation croisée 10 fois pour calculer la matrice de confusion et les métriques.-->
 
 ```{r rforest}
-
+cardio_rfor <-
 ```
 
 ```{r rf_plot}
 
 ```
 
+<!--% Calculez et visualisez la matrice de confusion (validation croisée 10 fois) -->
+
 ```{r rf_confusion}
 
 ```
+
+<!--% Métriques importantes dans le contexte -->
 
 ```{r rf_metrics}
 
 ```
 
-<!--% Critique de ce classifieur en 5 phrases-->
+<!--% Sachant que la prévalence des maladies cardio-vaculaires aux USA est de 7% (cf https://www.ncbi.nlm.nih.gov/books/NBK83160/), et en ignorant les différences entre homme et femme, corrigez vos métriques en ajustant les probabilités a priori -->
 
-## Maximisation du Rappel
+```{r rf_metrics_corr}
+cardio_prior <- c(presence = ___, absence = ___)
 
-<!--% Divisez votre jeu de données en deux avec les patients positif et les patients négatifs à la présence de maladie cardiovasculaire. Sélectionnez les 1500 patients positifs et 1000 patients négatifs. -->
-
-```{r cardio_prop}
-cardio_pos <- 
-cardio_neg <- 
-cardio_prop <- bind_rows(cardio_pos, cardio_neg)
 ```
 
-<!--%  Réalisez un second classifieur par forêt aléatoire sur ce nouveau tableau qui comprend volontairement plus de patients positifs que négatifs.-->
+<!--% Critique de ce classifieur en 5 phrases maxi -->
+
+## Amélioration du Rappel pour présence de maladie cardio-vasculaire
+
+<!--% Divisez votre jeu de données en deux avec les patients positif et les patients négatifs à la présence de maladie cardiovasculaire. Sélectionnez les 1500 patients positifs et 1000 patients négatifs au hasard. -->
+
+```{r cardio_prop}
+cardio_pos %<-%
+cardio_neg %<-%
+cardio_prop <- bind_rows(cardio_pos, cardio_neg)
+table(cardio_prop$cardio)
+```
+
+<!--%  Réalisez un second classifieur par forêt aléatoire sur ce nouveau tableau qui comprend volontairement plus de patients positifs que négatifs. Calculer et affichez la matrice de confusion, ainsi que les métriques importantes corrigées par rapport à une prévalence de 7% de ces maladies. -->
 
 ```{r rforest2}
-
+cardio_rfor2 <-
 ```
 
 ```{r rf_plot2}
@@ -100,24 +114,8 @@ cardio_prop <- bind_rows(cardio_pos, cardio_neg)
 
 ```
 
-<!--% Critique de ce classifieur en 5 phrases-->
-
-<!--% Adaptez les résultats de la matrice de confusion en tenant compte des véritables proportions. Commentez le résultat issu de cette adaptation en 5 lignes maximum. -->
-
-```{r prior}
-cardio_prior <- table(___) / nrow(___)
-cardio_prior <- structure(as.numeric(cardio_prior),
-  names = names(cardio_prior))
-cardio_prior
-```
-
-```{r metrics_with_prior}
-prior(___) <- cardio_prior
-summary(___)
-```
-
-<!--% Critique de ce classifieur en 3 phrases après avoir employé les probabilités a posteriori.-->
+<!--% Critique de ce classifieur en 5 phrases maximum. -->
 
 ## Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 5 phrases maximum quel classifieur vous considérez comme le meilleur, pourquoi et sur base de quelles métriques -->
+<!--% Discutez le rappel entre les deux classifieurs et pourquoi il est important d'avoir une valeur élevée pour cette métrique. Quelle a été l'impact de modifier les proababiltiés a priori? En 5 phrases maximum. -->
