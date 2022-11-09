@@ -72,7 +72,7 @@ cardio_rfor_predobj <-
 cardio_svm <- 
 ```
 
-<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur par validation croisée 10 fois -->
+<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test -->
 
 ```{r svm_mem}
 cardio_svm_mem <- 
