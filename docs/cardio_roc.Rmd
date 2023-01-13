@@ -62,6 +62,8 @@ cardio_rfor_predobj <-
 
 ```
 
+<!--% Critique de ce classifieur en 5 phrases maxi -->
+
 ## Classifieur machine à vecteurs supports
 
 <!--% Calculez un second classifieur à l'aide de la machine à vecteurs supports à l'aide du même set d'apprentissage -->
@@ -90,6 +92,8 @@ cardio_svm_predobj <-
 ```{r svm_auc}
 
 ```
+
+<!--% Critique de ce classifieur en 5 phrases maxi -->
 
 ## Comparaison des deux classifieurs
 
