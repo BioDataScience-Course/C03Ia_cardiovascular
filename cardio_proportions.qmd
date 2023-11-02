@@ -1,0 +1,239 @@
+---
+title: "Détection de maladies cardiovasculaire"
+subtitle: "Métriques et proportions"
+author: "___"
+date: "`r Sys.Date()`"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+editor: visual
+lang: fr
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+# This is needed to the SDD test suite, do not use in a "real" project
+if (!"tools:tests" %in% search())
+  source(here::here("tests/tools_tests.R"), attach(NULL, name = "tools:tests"))
+
+# Configure SciViews::R environment
+___, lang = "fr")
+```
+
+# Introduction et but
+
+Les maladies cardiovasculaires constituent l'une des principales causes de morbidité et de mortalité dans le monde. Elles englobent un large éventail de troubles, notamment l'athérosclérose, les maladies coronariennes, l'hypertension artérielle, les accidents vasculaires cérébraux (AVC), les maladies cardiaques congénitales, les arythmies cardiaques, et bien d'autres. Ces maladies touchent 7% de la population américaine [@anation2011].
+
+Les facteurs de risque des maladies cardiovasculaires sont multiples et incluent le tabagisme, une alimentation malsaine, la sédentarité, l'obésité, le diabète, le stress, et l'hérédité. En comprenant ces facteurs et en promouvant des modes de vie sains, il est possible de réduire considérablement le risque de développer de telles affections.
+
+Les symptômes des maladies cardiovasculaires peuvent varier, allant de douleurs thoraciques et d'essoufflement à l'insuffisance cardiaque et aux AVC. Une détection précoce et des soins appropriés sont cruciaux pour améliorer le pronostic et la qualité de vie des patients.
+
+Les avancées dans la recherche médicale et la technologie ont permis de développer des traitements innovants, notamment des interventions chirurgicales, des médicaments, et des thérapies de réadaptation cardiaque. Un diagnostic précoce est une étape clé dans le traitement de ces maladies.
+
+# Matériel et méthodes
+
+Les données employées sont un sous-ensemble d'un tableau de données nommées cardio_train.csv qui comprend 70000 observations. Ces données ont été mises à disposition sur le site kaggle sous le nom [*Cardiovascular Disease dataset*](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) par Svetlana Ulianova
+
+L'analyse est réalisée dans la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et ensuite étudier les performances des différents classifieurs.
+
+# Analyses
+
+<!--% Importez les données cardio.rds-->
+
+```{r import, record='RODFS', object='cardio'}
+cardio <- read("___")
+skimr::skim(cardio)
+```
+
+Suite à l'analyse des données brutes, des individus aberrants sont éliminés.
+
+<!--% Éliminez les individus aberrant en gardant les individus de plus 130cm, les individus de plus de 40 kg, avec une pression systolique supérieure à 50 et inférieure à 220, avec une pression diastolique supérieure à 50 et inférieure à 150. -->
+
+```{r clean, record='RODFS', object='cardio'}
+cardio %>.%
+  sselect(., -id) %>.%
+  smutate(., weight = ___/10) %>.% # Valeurs et unités incohérentes
+  sfilter(., height ___ & weight ___) %>.%
+  sfilter(., ap_hi > ___ & ap_hi ___) %>.%
+  sfilter(., ap_lo > ___ & ap_lo < ___) -> cardio
+```
+
+<!-- Réalisez une table de contingence à double entrée de la présence ou non de la maladie en fonction du sexe -->
+
+```{r}
+table(cardio$cardio, ___) |> 
+  tabularise()
+```
+
+<!-- Réalisez un nuage de points de l'indice de masse corporelle en fonction de l'âge estimé en année.-->
+
+```{r plot, record='RNSTR', arg='labels,layers'}
+cardio %>.%
+  smutate(., 
+    bmi = labelise(___/(___/100)^2,label = "IMC", units = "kg/m^2"),
+    age_esti = labelise(age/365, labe = "Age estimé", units = "Année")) %>.%
+  chart(data = ., ___ ~ ___ %col=% ___) +
+  geom_point(alpha = 0.5)
+```
+
+<!--% Interprétez le graphique et le tableau. -->
+
+```{r plotcomment, output='asis'}
+select_answer(r"-{
+[] -   La proportion d'homme et de femme est égale dans les données.
+[] -   La proportions d'homme et de femme est inégale.  
+[] -   Les proportions des patients sont en adéquation avec la prévalence de ces maladies aux USA.
+[] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes saines sont surreprésentées.
+[] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes malades sont surreprésentées.
+[] - Plus les personnes sont âgées, plus elles sont susceptibles d’être malades
+[] - Plus les personnes sont âgées, moins elles sont susceptibles d’être malades
+[] - La présence de maladies cardiovasculaires est identique au cours du temps.
+[] - L’IMC à lui seul ne permet pas de discriminer les deux groupes
+[] - L’IMC à lui seul  permet  de discriminer les deux groupes.}-")
+```
+
+## Classifieur initial
+
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques..-->
+
+```{r rforest, record='ROP', object='cardio_rf', arg='ntree,mtry'}
+set.seed(15416549)
+cardio_rf <- mlRforest(___)
+```
+
+<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
+
+```{r rf_plot}
+plot(___)
+```
+
+<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois -->
+
+```{r rf_confusion, record='ROA', object='cardio_rf_conf', arg='col.freqs'}
+set.seed(1887)
+cardio_rf_conf <- ___
+plot(cardio_rf_conf)
+```
+
+<!--% Calculez les métriques globales, ainsi que le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
+
+```{r rf_metrics, record='RNA', arg='names,class'}
+summary(cardio_rf_conf, type = c(___))
+```
+
+<!--% Sachant que la prévalence des maladies cardio-vasculaires aux USA est de 7% (cf https://www.ncbi.nlm.nih.gov/books/NBK83160/), et en ignorant les différences entre homme et femme, corrigez vos métriques en ajustant les probabilités a priori -->
+
+```{r rf_metrics_corr, record='RNA', arg='names,class'}
+cardio_prior <- c(presence = ___, absence = ___)
+prior(____) <- ___
+summary(___)
+```
+
+<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
+
+...votre description ici...
+
+## Optimisation du rappel
+
+```{r}
+over_undersample <- function(x, weights = NULL,
+    total = round(sum(weights * table(x))), min_warning = 10) {
+  stopifnot(is.factor(x))
+  levels_x <- levels(x)
+  nlevels <- length(levels_x)
+  stopifnot(nlevels >= 2)
+  # There may not be empty levels
+  table_x <- table(x)
+  if (any(table_x == 0))
+    stop("There may be no empty levels. Use droplevels() first?")
+  if (any(table_x < min_warning))
+    warning("Some levels have less than ", min_warning, " items.")
+  # Default value for weights = get evenly distributed classes
+  if (is.null(weights))
+    weights <- length(x) / table_x / nlevels
+  stopifnot(is.numeric(weights), length(weights) == nlevels)
+  stopifnot(length(total) == 1, is.numeric(total), total > 0)
+  # This is an error to generate less than min_warning * nlevels items
+  if (total < min_warning * nlevels)
+    stop("The total cannot be lower than min_warning * number of levels in x")
+  # times is the number of times each item must be multiplied to get the desired
+  # total number of items with the desired class distribution
+  times <- weights / sum(weights * table_x) * total
+  # For integer number of times, we replicate, but for fraction, we randomly
+  # subsample
+  # For the repetition, it is enough to use rep() with times[x] (times is
+  # truncated by rep). times[x] selects the number of times each item must be
+  # repeated, depending on its class, because the factor object internally
+  # stores the levels as integers
+  idx <- rep(1:length(x), times = times[x])
+  # For the fraction part of times, we need to subsample each level
+  frac <- times %% 1
+  split_x <- split(1:length(x), x)
+  for (i in 1:nlevels) {
+    level <- levels_x[i]
+    level_idx <- split_x[[level]]
+    split_x[[level]] <- sample(level_idx,
+      size = round(frac[[i]] * length(level_idx)))
+  }
+  # All indices are idx + unlisted split_x
+  structure(sort(c(idx, unname(unlist(split_x)))), times = times)
+}
+```
+
+<!--% Divisez votre jeu de données en deux avec les patients positifs et les patients négatifs à la présence de maladie cardiovasculaire. Sélectionnez la totalité des patients positifs et 1/2 patients négatifs au hasard. Employez la fonction over_undersample() -->
+
+```{r cardio_prop, record='RODFS', object='cardio_prop'}
+set.seed(9856)
+prop <- over_undersample(___, weights = c(absence = ___, ____ = ____))
+cardio_prop <- ___prop, ]
+table(____) |> 
+  tabularise() 
+```
+
+<!--% Entraînez un classifieur par forêt aléatoire sur `cardio_prop` afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques..-->
+
+```{r rforest2, record='ROP', object='cardio_rf2', arg='ntree,mtry'}
+set.seed(1541)
+cardio_rf2 <- mlRforest(___)
+```
+
+<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
+
+```{r rf_plot2}
+plot(___)
+```
+
+<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois -->
+
+```{r rf_confusion2, record='ROA', object='cardio_rf_conf2', arg='col.freqs'}
+set.seed(1845487)
+cardio_rf_conf2 <- ___
+plot(___)
+```
+
+<!--% Calculez les métriques globales, ainsi que le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
+
+```{r rf_metrics2, record='RNA', arg='names,class'}
+summary(___, type = c("Fscore", "Recall", "Precision"))
+```
+
+<!--% Recalculez les métriques en tenant compte de la prévalence de 7% de ces maladies.-->
+
+```{r rf_metrics_corr2, record='RNA', arg='names,class'}
+prior(___) <- ___
+summary(___)
+```
+
+<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
+
+...votre description ici...
+
+# Discussion et conclusion
+
+<!--% Indiquez ci-dessous en 4 à 6 phrases maximum quel classifieur vous considérez comme le meilleur et s'il vous parait adéquat ici pour un déploiement. -->
+
+...votre discussion ici...
+
+# Références

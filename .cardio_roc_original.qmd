@@ -1,0 +1,164 @@
+---
+title: "Détection de maladies cardiovasculaire"
+subtitle: "Comparaison de classifieurs via les courbes ROC"
+author: "___"
+date: "`r Sys.Date()`"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+editor: visual
+lang: fr
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+# This is needed to the SDD test suite, do not use in a "real" project
+if (!"tools:tests" %in% search())
+  source(here::here("tests/tools_tests.R"), attach(NULL, name = "tools:tests"))
+
+# Configure SciViews::R environment
+SciViews::R("ml", lang = "fr")
+```
+
+# Introduction et but
+
+Les maladies cardiovasculaires constituent l'une des principales causes de morbidité et de mortalité dans le monde. Elles englobent un large éventail de troubles, notamment l'athérosclérose, les maladies coronariennes, l'hypertension artérielle, les accidents vasculaires cérébraux (AVC), les maladies cardiaques congénitales, les arythmies cardiaques, et bien d'autres. Ces maladies touchent 7% de la population américaine [@anation2011]. Un diagnostic précoce est une étape clé dans le traitement de ces maladies.
+
+# Matériel et méthodes
+
+Les données employées sont un sous-ensemble d'un tableau de données nommées cardio_train.csv qui comprend 70000 observations. Ces données ont été mises à disposition sur le site kaggle sous le nom [*Cardiovascular Disease dataset*](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) par Svetlana Ulianova
+
+L'analyse est réalisée dans la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et ensuite étudier les performances des différents classifieurs.
+
+# Analyses
+
+## Préparation des données
+
+<!--% Importez les données se trouvant dans le fichier cardio.rds. Éliminez les individus aberrant en gardant les individus de plus 130cm, les individus de plus de 40 kg, avec une pression systolique supérieure à 50 et inférieure à 220, avec une pression diastolique supérieure à 50 et inférieure à 150. -->
+
+```{r import2, record='RODFS', object='cardio'}
+cardio <- read("data/cardio.rds")
+# nettoyage des données
+cardio %>.%
+  sselect(., -id) %>.%
+  smutate(., weight = weight/10) %>.% # Valeurs et unités incohérentes
+  ___ -> cardio
+```
+
+<!--# La description des données n'est pas réalisée dans ce carnet de notes. Cette étape a déjà été réalisée dans le carnet de notes cardio_proportions.qmd-->
+
+<!--% Divisez votre jeu de données en cardio_train et cardio_test (2/3 en apprentissage) -->
+
+```{r split}
+set.seed(8945611)
+cardio_split <- ____
+cardio_train <- training(___)
+cardio_test <- testing(___)
+```
+
+## Forêt aléatoire
+
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio_train afin de prédire la variable `cardio`. Limitez le nombre d'arbre à 80. -->
+
+```{r rf, record='ROP', object='cardio_rf', arg='ntree,mtry'}
+set.seed(15416549)
+cardio_rf <- ____
+```
+
+<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
+
+```{r}
+plot(cardio_rf)
+```
+
+<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur en utilisant le set de test -->
+
+```{r rf_mem, record='ROMD5', object='cardio_rf_mem'}
+cardio_rf_mem <- predict(____, ____, type = "___")
+head(cardio_rf_mem)
+```
+
+<!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr -->
+
+```{r rf_roc, record='ROMD5', object='cardio_rf_perf'}
+cardio_rf_predobj <- prediction(___)
+# 2) Calculer les performances avec les deux métriques tpr et fpr
+cardio_rf_perf <- performance(___, "tpr", "fpr")
+# 3) Tracer notre graphique ROC
+plot(cardio_rf_perf)
+abline(a = 0, b = 1, lty = 2)
+```
+
+<!-- Calculez l'aire sous la courbe ROC -->
+
+```{r rf_auc}
+___
+```
+
+<!--% Décrivez ce classifieur en 5 phrases maxi -->
+
+...Description des optimisations et des résultats obtenus...
+
+## Machine à vecteurs supports
+
+<!--% Calculez un second classifieur à l'aide de la machine à vecteurs supports à l'aide du même set d'apprentissage -->
+
+<!--# La méthode SVM a beaucoup de paramètres à optimiser, mais dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
+
+```{r svm, record='ROP', object='cardio_svm', arg='probA,probB'}
+set.seed(487063)
+cardio_svm <- ___
+```
+
+<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test -->
+
+```{r svm_mem, record='ROMD5', object='cardio_svm_mem'}
+cardio_svm_mem <- ___(___, ___, type = "___")
+head(cardio_svm_mem)
+```
+
+<!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr -->
+
+```{r svm_roc, record='ROMD5', object='cardio_svm_perf'}
+cardio_svm_predobj <- prediction(___)
+cardio_svm_perf <- performance(___, "tpr", "fpr")
+plot(cardio_svm_perf)
+abline(a = 0, b = 1, lty = 2)
+```
+
+<!-- Calculez l'aire sous la courbe ROC -->
+
+```{r svm_auc}
+___
+```
+
+<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
+
+...Description des optimisations et des résultats obtenus...
+
+## Comparaison des deux classifieurs
+
+<!--% Comparez les deux classifieurs en affichant leurs courbes ROC sur un même graphique -->
+
+```{r roc_compa}
+plot(___, col = "darkgreen")
+# Ajout de celui relatif à pima1b sur le même graphique
+plot(___, col = "darkred", add = ___)
+abline(a = 0, b = 1, lty = 2)
+legend("bottomright", inset = 0.1, legend = c("rf", "svm"), lty = 1,
+  col = c("darkgreen", "darkred"))
+```
+
+<!--% Comparez les deux courbes ROC en 3 phrases. -->
+
+...Comparaison des résultats obtenus...
+
+# Discussion et conclusion
+
+<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-ce que ce classifieur est meilleur en toutes circonstances (quelle que soit la prévalence de la maladie) ? -->
+
+...votre discussion ici...
+
+# Références
