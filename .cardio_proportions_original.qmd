@@ -10,7 +10,7 @@ format:
     toc: true
 editor: visual
 lang: fr
-bibliography: references.bib
+bibliography: biblio/references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -19,220 +19,247 @@ if (!"tools:tests" %in% search())
   source(here::here("tests/tools_tests.R"), attach(NULL, name = "tools:tests"))
 
 # Configure SciViews::R environment
-___, lang = "fr")
+SciViews::R("ml", lang = "fr")
 ```
 
 # Introduction et but
 
-Les maladies cardiovasculaires constituent l'une des principales causes de morbidité et de mortalité dans le monde. Elles englobent un large éventail de troubles, notamment l'athérosclérose, les maladies coronariennes, l'hypertension artérielle, les accidents vasculaires cérébraux (AVC), les maladies cardiaques congénitales, les arythmies cardiaques, et bien d'autres. Ces maladies touchent 7% de la population américaine [@anation2011].
+Parmi les causes cliniques responsables de mortalité ou de morbidité, les maladies cardiovasculaires figurent en bonne place, malheureusement. Aux États-Unis, ces maladies concernent 7% de la population [@anation2011]. Détecter précocement les premiers signes cliniques de problèmes cardiovasculaires est crucial pour apporter un traitement rapidement. Cela permet d'améliorer la durée et les conditions de vie des patients atteints de telles maladies.
 
-Les facteurs de risque des maladies cardiovasculaires sont multiples et incluent le tabagisme, une alimentation malsaine, la sédentarité, l'obésité, le diabète, le stress, et l'hérédité. En comprenant ces facteurs et en promouvant des modes de vie sains, il est possible de réduire considérablement le risque de développer de telles affections.
-
-Les symptômes des maladies cardiovasculaires peuvent varier, allant de douleurs thoraciques et d'essoufflement à l'insuffisance cardiaque et aux AVC. Une détection précoce et des soins appropriés sont cruciaux pour améliorer le pronostic et la qualité de vie des patients.
-
-Les avancées dans la recherche médicale et la technologie ont permis de développer des traitements innovants, notamment des interventions chirurgicales, des médicaments, et des thérapies de réadaptation cardiaque. Un diagnostic précoce est une étape clé dans le traitement de ces maladies.
+Le but de ce travail est de déterminer si, à partir de données générales faciles à obtenir (donc, ne nécessitant pas d'analyses compliquées et coûteuses), il est possible de déterminer si un patient est à risque ou non concernant ces maladies cardiovasculaires.
 
 # Matériel et méthodes
 
-Les données employées sont un sous-ensemble d'un tableau de données nommées cardio_train.csv qui comprend 70000 observations. Ces données ont été mises à disposition sur le site kaggle sous le nom [*Cardiovascular Disease dataset*](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) par Svetlana Ulianova
+Les données employées sont un sous-ensemble d'un jeu de données disponibles sur Kaggle ([Cardiovascular Disease dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset)) qui contient 70.000 observations (voir \`R/import_cardio.R\`). Diverses informations ont été collectées sur des patients atteints ou non de maladies cardiovasculaires. Ces données sont en partie fournies par le patient lui-même et en parties issues d'un bilan médical. Les variables sont décrites (métadonnées), mais l'origine et le plan d'échantillonnage ne sont pas indiqués. Nous considérerons la situation la plus probable qui est que ces données proviennent d'un système informatisé de gestion de dossiers médicaux à l'échelle d'une région ou d'un pays (la taille de l'échantillon permet de considérer que cela concerne probablement plus d'un seul hôpital, aussi grand soit-il). Étant donné la répartition en sous-groupes, notamment pour la présence ou l'absence de maladie cardiovasculaire (à peu près 50%/50%, voir description des données), l'échantillonnage n'est certainement pas aléatoire. Il est probable qu'il soit stratifié par rapport à ce critère. En absence de plus d'information, nous le traiterons comme tel.
 
-L'analyse est réalisée dans la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et ensuite étudier les performances des différents classifieurs.
+L'analyse est réalisée avec la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux), utilisant le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
 
-# Analyses
+# Résultats
 
-<!--% Importez les données cardio.rds-->
+Voici la description générale des données :
+
+<!--% Importez les données cardio.rds et réalisez une description numérique globale du jeu de données. Vous n'avez rien à modifier dans le chunk suivant pour cela. -->
 
 ```{r import, record='RODFS', object='cardio'}
 cardio <- read("___")
 skimr::skim(cardio)
 ```
 
-Suite à l'analyse des données brutes, des individus aberrants sont éliminés.
+<!--% Interprétez la description globale de ces données. -->
 
-<!--% Éliminez les individus aberrant en gardant les individus de plus 130cm, les individus de plus de 40 kg, avec une pression systolique supérieure à 50 et inférieure à 220, avec une pression diastolique supérieure à 50 et inférieure à 150. -->
-
-```{r clean, record='RODFS', object='cardio'}
-cardio %>.%
-  sselect(., -id) %>.%
-  smutate(., weight = ___/10) %>.% # Valeurs et unités incohérentes
-  sfilter(., height ___ & weight ___) %>.%
-  sfilter(., ap_hi > ___ & ap_hi ___) %>.%
-  sfilter(., ap_lo > ___ & ap_lo < ___) -> cardio
+```{r importcomment, output='asis'}
+select_answer(r"-{
+[] -   Le jeu de données contient 3000 cas et 13 attributs dont 7 sont qualitatifs et 6 sont quantitatifs.
+[] -   Le jeu de données contient 3000 cas et 13 variables avec 6 attributs qualitatifs et 6 attributs quantitatifs.
+[] -   Le jeu de données contient 3000 cas et 13 variables avec 6 attributs qualitatifs et 5 attributs quantitatifs.
+[] -   Aucune donnée n'est manquante.
+[] -   Une donnée est manquante.
+[] -   Plusieurs données sont manquantes.
+[] -   Les données quantitatives sont toutes dans des plages de valeurs plausibles.
+[] -   L’âge étant exprimé en jours, nous le convertirons en années pour plus de lisibilité.
+[] -   Une ou plusieurs données de taille sont aberrantes car la taille minimale est de 74cm alors que l'âge minimal est de 14327 jours, soit 14327/365 = 39 ans.
+[] -   Les masses ne correspondent pas à l'unité annoncée (le kg) car elles varient de 410 à 1600. Il est probable qu'elles soient exprimées en 1/10 de kg. Nous les convertirons en kg.
+[] -   Les mesures de tension artérielle semblent correctes. L'unité n'est pas précisée, mais nous assumerons qu'il s'agit de mmHg
+[] -   Nous observons des données aberrantes dans les tensions artérielles avec des minima de 10 pour la pression systolique `ap_hi` et pour la pression diastolique `ap_lo`. L'unité n'est pas précisée, mais nous considérerons qu'il s'agit de mmHg.
+[] -   De même les maxima pour les tensions artérielles sont irréalistes avec 240 pour la pression systolique et 9011 pour la pression diastolique.
+[] -   De manière générale, nous devons être attentif aux valeurs erronées et rester suspicieux quant à l'échantillonnage, les unités des variables quantitatives et la validité globale des données qui apparaissent peu documentées et pas du tout vérifiées.}-")
 ```
 
-<!-- Réalisez une table de contingence à double entrée de la présence ou non de la maladie en fonction du sexe -->
+## Feature engineering
 
-```{r}
-table(cardio$cardio, ___) |> 
+En absence d'informations supplémentaires et dans l'impossibilité de vérifier les observations, nous préférons éliminer les cas présentant des valeurs hors plage plausible pour une ou plusieurs données (y compris si la pression diastolique est supérieure ou égale à la pression systolique). Nous convertissons l'âge en années et la masse en kg. L' `id` du patient ne nous est pas utile et nous l'éliminons.
+
+<!--# Ce jeu de données contient pas mal d'erreurs et est peu documenté. Il est pourtant considéré sur Kaggle comme intéressant (et nous partageons cet avis). En effet, il est représentatif de données réelles issues de la compilation de diverses sources avant nettoyage. Ceci est très loin des jeux de données "exemples" souvent utilisés en cours de statistique où tout paraît parfait d'emblée. À notre avis, il est bien plus instructif de travailler avec ce genre de données plus proches de la réalité ! -->
+
+<!--% Convertissez age en années, weight en kg (réellement en kg !), et retirez id. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 50 et inférieure à 220 et une pression diastolique supérieure à 60 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
+
+```{r clean, record='RODFS', object='cardio2'}
+cardio %>.%
+  smutate(., age = labelise(___, "Âge", units = "années"), weight = ___) %>.%
+  sselect(., ___) %>.%
+  sfilter(., height ___) %>.%
+  sfilter(., ap_hi ___ & ___) %>.%
+  sfilter(., ap_lo ___ & ___) %>.%
+  sfilter(.,___ < ___) ->
+  cardio2
+# cardio plus nécessaire
+rm(cardio)
+```
+
+La corrélation entre les variables quantitatives est une indication utile. Des variables trop fortement corrélées peuvent signifier qu'il y a une redondance d'information. Elle est nuisible à certains algorithmes de classification (et de régression).
+
+<!--% Réalisez un graphique de corrélation des attributs quantitatifs du jeu de données. -->
+
+```{r corr, record='ROSTR', object='cardio2_corr', arg='dimnames,method,na.method,class'}
+cardio2 %>.%
+  sselect(., ___:___) %>.%
+  ___(.) ->
+  cardio2_corr
+___(cardio2_corr)
+```
+
+```{r corrcomment, output='asis'}
+select_answer(r"-{
+[] -   Les corrélations de Spearman vont de 0.02 à 0.72.
+[] -   Les corrélations de Pearson vont de 0.02 à 0.72.
+[] -   Les corrélations de Kendall vont de 0.02 à 0.72.
+[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques, mais avec 0.72, elles restent raisonnables.
+[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques. À 0.72 il y a redondance entre les deux variables et il vaut mieux en éliminer une des deux.}-")
+```
+
+Sur base de mesures communément utilisées dans le domaine, nous pouvons calculer quelques variables dérivées potentiellement utiles :
+
+-   L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
+
+-   La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
+
+-   La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
+
+<!--% Calculez ces trois variables dérivées supplémentaires ci-dessous. Enregistrez cardio2 au format rds dans le dossier data pour réutilisation dans le second document Quarto. -->
+
+```{r newvars, record='RODFS', object='cardio2'}
+cardio2 %>.%
+  smutate(.,
+    bmi   = labelise(___, label = "IMC", units = "kg/m^2"),
+    pulse = labelise(___, label = "Pression de poul", units = "mmHg"),
+    map   = labelise(___, label = "Pression artérielle moyenne", units = "mmHg")) ->
+  cardio2
+write$rds(cardio2, "data/cardio2.rds")
+```
+
+Comment se répartissent les données en fonction de la présence ou non de maladie cardiovasculaire et en fonction du genre ou de l'âge ?
+
+<!-- Réalisez une table de contingence à double entrée de la présence ou non de la maladie en fonction du genre. -->
+
+```{r table, record='RNA', arg='col_keys'}
+table(___, ___) |> 
   tabularise()
 ```
 
-<!-- Réalisez un nuage de points de l'indice de masse corporelle en fonction de l'âge estimé en année.-->
+<!-- Réalisez un graphique en barres de la présence ou non de maladie cardiovasculaire en fonction de l'âge (arrondi à l'année vers le bas) avec les barres de présence et d'absence l'une à côté de l'autre pour chaque année. -->
 
 ```{r plot, record='RNSTR', arg='labels,layers'}
-cardio %>.%
-  smutate(., 
-    bmi = labelise(___/(___/100)^2,label = "IMC", units = "kg/m^2"),
-    age_esti = labelise(age/365, labe = "Age estimé", units = "Année")) %>.%
-  chart(data = ., ___ ~ ___ %col=% ___) +
-  geom_point(alpha = 0.5)
+cardio2 %>.%
+  smutate(., age = ___) %>.%
+  chart(data = ., ___) +
+    ___(position = "___")
 ```
 
-<!--% Interprétez le graphique et le tableau. -->
+<!--% Interprétez le tableau de contingence et le graphique. -->
 
 ```{r plotcomment, output='asis'}
 select_answer(r"-{
-[] -   La proportion d'homme et de femme est égale dans les données.
-[] -   La proportions d'homme et de femme est inégale.  
+[] -   La proportion d'hommes et de femmes est égale dans les données.
+[] -   La proportion d'hommes et de femmes est inégale.
 [] -   Les proportions des patients sont en adéquation avec la prévalence de ces maladies aux USA.
 [] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes saines sont surreprésentées.
 [] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes malades sont surreprésentées.
-[] - Plus les personnes sont âgées, plus elles sont susceptibles d’être malades
-[] - Plus les personnes sont âgées, moins elles sont susceptibles d’être malades
-[] - La présence de maladies cardiovasculaires est identique au cours du temps.
-[] - L’IMC à lui seul ne permet pas de discriminer les deux groupes
-[] - L’IMC à lui seul  permet  de discriminer les deux groupes.}-")
+[] - Plus les personnes sont âgées, plus elles sont susceptibles d’être malades.
+[] - Plus les personnes sont âgées, moins elles sont susceptibles d’être malades.
+[] - La présence de maladies cardiovasculaires est identique au cours du temps.}-")
 ```
+
+<!--# Il est encore possible de faire pas mal d'autres observations sur ces données (voyez par exemple ici : https://www.kaggle.com/code/sulianova/eda-cardiovascular-data pour une analyse complète du jeu de données original de 70.000 observations réalisé en Python). Comprenez bien que la partie "feature engineering" est cruciale dans les performances obtenues ensuite pour votre classifieur. Cependant, il est temps maintenant de nous attaquer à l'élément central de ce projet : la classification et l'impact des proportions par classes sur les résultats. -->
 
 ## Classifieur initial
 
-<!--% Entraînez un classifieur par forêt aléatoire sur cardio afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques..-->
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio2 afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100 (considérez que vous avez procédé à une optimisation de votre classifieur qui vous mène à cette valeur). Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques. -->
 
-```{r rforest, record='ROP', object='cardio_rf', arg='ntree,mtry'}
+```{r rforest, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
-cardio_rf <- mlRforest(___)
+cardio2_rf <- mlRforest(data = ___,  ___)
 ```
 
-<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
+<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois. -->
 
-```{r rf_plot}
-plot(___)
-```
-
-<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois -->
-
-```{r rf_confusion, record='ROA', object='cardio_rf_conf', arg='col.freqs'}
+```{r rf_confusion, record='ROA', object='cardio2_rf_conf', arg='col.freqs'}
 set.seed(1887)
-cardio_rf_conf <- ___
-plot(cardio_rf_conf)
+cardio2_rf_conf <- confusion(cvpredict(___), ___)
+plot(cardio2_rf_conf)
 ```
 
 <!--% Calculez les métriques globales, ainsi que le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
 
 ```{r rf_metrics, record='RNA', arg='names,class'}
-summary(cardio_rf_conf, type = c(___))
+summary(___, type = ___)
 ```
 
-<!--% Sachant que la prévalence des maladies cardio-vasculaires aux USA est de 7% (cf https://www.ncbi.nlm.nih.gov/books/NBK83160/), et en ignorant les différences entre homme et femme, corrigez vos métriques en ajustant les probabilités a priori -->
+Les proportions entre malades et non malades sont à peu près balancées dans le set d'apprentissage (et donc de test, puisque celui-ci est réalisé par validation croisée), ceci ne correspond pas aux performances attendues du classifieur en déploiement. Sur base de la prévalence des maladies cardiovasculaires aux USA, nous devons ajuster les probabilités *a priori* pour obtenir des métriques plus fidèles.
+
+<!--% Sachant que la prévalence des maladies cardio-vasculaires aux USA est de 7% (cf https://www.ncbi.nlm.nih.gov/books/NBK83160/), et en ignorant les différences entre homme et femme, corrigez vos métriques en ajustant les probabilités a priori. -->
 
 ```{r rf_metrics_corr, record='RNA', arg='names,class'}
-cardio_prior <- c(presence = ___, absence = ___)
-prior(____) <- ___
-summary(___)
+cardio_prior <- ___
+prior(___) <- cardio_prior
+summary(___, type = ___)
 ```
 
-<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
+Nous analysons l'importance des variables dans la discrimination de maladies cardiovasculaires en utilisant la diminution de l'indice de Gini dans les arbres de notre forêt aléatoire.
 
-...votre description ici...
+<!--% Effectuez une analyse de l'importance des variables de votre classifieur forêt aléatoire. -->
+
+```{r varimp, record='RNA', arg='dimnames'}
+___
+```
+
+```{r varimpcomment, output='asis'}
+select_answer(r"-{
+[] -   L'âge est le facteur le plus important, suivi de l'IMC.
+[] -   La taille et la masse sont également importantes isolément de l'IMC.
+[] -   La pression systolique et la pression artérielle moyenne sont également déterminantes, plus que la pression diastolique ou de poul.
+[] -   Le cholestérol dans le sang, bien qu'ayant un effet moindre, joue aussi un rôle.
+[] -   Le glucose dans le sang, l'activité physique, le genre, le fait de fumer ou de boire de l'alcool ne semblent pas ou peu indicateurs de développement de maladies cardiovasculaires.}-")
+```
 
 ## Optimisation du rappel
 
-```{r}
-over_undersample <- function(x, weights = NULL,
-    total = round(sum(weights * table(x))), min_warning = 10) {
-  stopifnot(is.factor(x))
-  levels_x <- levels(x)
-  nlevels <- length(levels_x)
-  stopifnot(nlevels >= 2)
-  # There may not be empty levels
-  table_x <- table(x)
-  if (any(table_x == 0))
-    stop("There may be no empty levels. Use droplevels() first?")
-  if (any(table_x < min_warning))
-    warning("Some levels have less than ", min_warning, " items.")
-  # Default value for weights = get evenly distributed classes
-  if (is.null(weights))
-    weights <- length(x) / table_x / nlevels
-  stopifnot(is.numeric(weights), length(weights) == nlevels)
-  stopifnot(length(total) == 1, is.numeric(total), total > 0)
-  # This is an error to generate less than min_warning * nlevels items
-  if (total < min_warning * nlevels)
-    stop("The total cannot be lower than min_warning * number of levels in x")
-  # times is the number of times each item must be multiplied to get the desired
-  # total number of items with the desired class distribution
-  times <- weights / sum(weights * table_x) * total
-  # For integer number of times, we replicate, but for fraction, we randomly
-  # subsample
-  # For the repetition, it is enough to use rep() with times[x] (times is
-  # truncated by rep). times[x] selects the number of times each item must be
-  # repeated, depending on its class, because the factor object internally
-  # stores the levels as integers
-  idx <- rep(1:length(x), times = times[x])
-  # For the fraction part of times, we need to subsample each level
-  frac <- times %% 1
-  split_x <- split(1:length(x), x)
-  for (i in 1:nlevels) {
-    level <- levels_x[i]
-    level_idx <- split_x[[level]]
-    split_x[[level]] <- sample(level_idx,
-      size = round(frac[[i]] * length(level_idx)))
-  }
-  # All indices are idx + unlisted split_x
-  structure(sort(c(idx, unname(unlist(split_x)))), times = times)
-}
-```
+Notre but étant de détecter les patients *à risque* de maladies cardiovasculaires, nous souhaitons maximiser le rappel pour la présence de la maladie. Ici, la réduction de la précision (fausses alertes) n'est pas grave, car les patients retenus subiront des analyses plus approfondies ensuite, qui permettront de séparer les vrais des faux positifs. Une des façons d'y arriver est de modifier les proportions des deux classes dans le set d'apprentissage. Ici, nous nous arrangeons pour avoir deux fois plus de cas malades que de cas sains et nous créons un nouveau classifieur.
 
-<!--% Divisez votre jeu de données en deux avec les patients positifs et les patients négatifs à la présence de maladie cardiovasculaire. Sélectionnez la totalité des patients positifs et 1/2 patients négatifs au hasard. Employez la fonction over_undersample() -->
+<!--% Sélectionnez la totalité des patients positifs et la moitié patients négatifs au hasard. Employez la fonction over_undersample() pour ce faire. Les nouvelles seront placées dans cardio3. -->
 
-```{r cardio_prop, record='RODFS', object='cardio_prop'}
+```{r cardio_prop, record='RODFS', object='cardio3'}
+# Récupération de la fonction over_undersample() depuis R/functions.R
+source("R/functions.R")
 set.seed(9856)
-prop <- over_undersample(___, weights = c(absence = ___, ____ = ____))
-cardio_prop <- ___prop, ]
-table(____) |> 
+prop <- ___(___, weights = ___)
+cardio3 <- ___
+table(cardio3$cardio) |> 
   tabularise() 
 ```
 
-<!--% Entraînez un classifieur par forêt aléatoire sur `cardio_prop` afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques..-->
+<!--% Entraînez un classifieur par forêt aléatoire sur `cardio3` afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100 comme dans le précédent. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques..-->
 
-```{r rforest2, record='ROP', object='cardio_rf2', arg='ntree,mtry'}
+```{r rforest2, record='ROP', object='cardio3_rf', arg='ntree,mtry'}
 set.seed(1541)
-cardio_rf2 <- mlRforest(___)
+cardio3_rf <- ___
 ```
 
-<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
+<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois. -->
 
-```{r rf_plot2}
-plot(___)
-```
-
-<!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois -->
-
-```{r rf_confusion2, record='ROA', object='cardio_rf_conf2', arg='col.freqs'}
+```{r rf_confusion2, record='ROA', object='cardio3_rf_conf', arg='col.freqs'}
 set.seed(1845487)
-cardio_rf_conf2 <- ___
-plot(___)
+cardio3_rf_conf <- ___
+plot(cardio3_rf_conf)
 ```
 
 <!--% Calculez les métriques globales, ainsi que le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
 
 ```{r rf_metrics2, record='RNA', arg='names,class'}
-summary(___, type = c("Fscore", "Recall", "Precision"))
+___
 ```
 
-<!--% Recalculez les métriques en tenant compte de la prévalence de 7% de ces maladies.-->
+Après correction des probabilités *a priori*, cela donne ceci :
+
+<!--% Recalculez les métriques en tenant compte de la prévalence de 7% de ces maladies. -->
 
 ```{r rf_metrics_corr2, record='RNA', arg='names,class'}
-prior(___) <- ___
-summary(___)
+___
+___
 ```
-
-<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
-
-...votre description ici...
 
 # Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 4 à 6 phrases maximum quel classifieur vous considérez comme le meilleur et s'il vous parait adéquat ici pour un déploiement. -->
+<!--% Indiquez ci-dessous en 3 à 6 phrases maximum quel classifieur vous considérez comme le meilleur et s'il vous parait adéquat ici pour un déploiement par rapport au but fixé (discutez à la fois du rappel et de la précision des deux classifieurs réalisés). -->
 
 ...votre discussion ici...
 

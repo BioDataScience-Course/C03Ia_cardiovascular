@@ -8,6 +8,8 @@ clean :
 
 original :
 	echo "Configuration du dépôt avec les fichiers d'origine..."
+	echo "  • Élimination des données calculées..."
+	rm -f ../data/cardio2.rds
 	echo "  • Remplacement des fichiers de travail par les originaux..."
 	Rscript -e "source('tools_tests.R'); res <- prepare_files(type = 'original')"
 	echo "  • Élimination des versions compilées des documents Quarto..."
@@ -27,6 +29,8 @@ solution :
 	Rscript -e "source('tools_tests.R'); res <- decrypt_solutions(error = FALSE)"
 	echo "  • Remplacement des fichiers de travail par les solutions..."
 	Rscript -e "source('tools_tests.R'); res <- prepare_files(type = 'solution')"
+	echo "  • Élimination des données calculées..."
+	rm -f ../data/cardio2.rds
 	echo "  • Élimination des version compilées des documents Quarto..."
 	rm -f ../cardio_proportions.html
 	rm -rf ../cardio_proportions_files
@@ -40,6 +44,8 @@ prepare :
 	echo "Préparation pour la distribution du dépôt..."
 	echo "  • Vérification du mot de passe..."
 	if [ ! -e ".key" ]; then echo "✗ Exécution interrompue : mot de passe introuvable !" && exit 1; fi
+	echo "  • Élimination des données calculées..."
+	rm -f ../data/cardio2.rds
 	echo "  • Remplacement des fichiers de travail par les originaux..."
 	Rscript -e "source('tools_tests.R'); res <- prepare_files(type = 'original', remove_last_saved = TRUE)"
 	echo "  • Cryptage des fichiers de solution..."

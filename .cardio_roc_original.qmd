@@ -10,7 +10,7 @@ format:
     toc: true
 editor: visual
 lang: fr
-bibliography: references.bib
+bibliography: biblio/references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -24,141 +24,140 @@ SciViews::R("ml", lang = "fr")
 
 # Introduction et but
 
-Les maladies cardiovasculaires constituent l'une des principales causes de morbidité et de mortalité dans le monde. Elles englobent un large éventail de troubles, notamment l'athérosclérose, les maladies coronariennes, l'hypertension artérielle, les accidents vasculaires cérébraux (AVC), les maladies cardiaques congénitales, les arythmies cardiaques, et bien d'autres. Ces maladies touchent 7% de la population américaine [@anation2011]. Un diagnostic précoce est une étape clé dans le traitement de ces maladies.
+Les maladies cardiovasculaires touchent 7% de la population américaine [@anation2011]. Un diagnostic précoce est une étape clé dans le traitement de ces maladies. Dans ce contexte, nous cherchons à mettre au point un classifieur capable de détecter les personnes à risque sur base de données assez générales (morphométrie de base, pression artérielle, analyse de sang basique).
 
 # Matériel et méthodes
 
-Les données employées sont un sous-ensemble d'un tableau de données nommées cardio_train.csv qui comprend 70000 observations. Ces données ont été mises à disposition sur le site kaggle sous le nom [*Cardiovascular Disease dataset*](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) par Svetlana Ulianova
+Les données proviennent du jeu vérifié et remanié dans `cardio_propotions.qmd`. Voir ce dernier document pour les détails.
 
-L'analyse est réalisée dans la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et ensuite étudier les performances des différents classifieurs.
+# Résultats
 
-# Analyses
+Les données sont nettoyées, et de nouvelles variables sont calculées dans `cardio_proportions.qmd`. Nous repartons ici du même jeu de données `cardio3`.
 
-## Préparation des données
-
-<!--% Importez les données se trouvant dans le fichier cardio.rds. Éliminez les individus aberrant en gardant les individus de plus 130cm, les individus de plus de 40 kg, avec une pression systolique supérieure à 50 et inférieure à 220, avec une pression diastolique supérieure à 50 et inférieure à 150. -->
-
-```{r import2, record='RODFS', object='cardio'}
-cardio <- read("data/cardio.rds")
-# nettoyage des données
-cardio %>.%
-  sselect(., -id) %>.%
-  smutate(., weight = weight/10) %>.% # Valeurs et unités incohérentes
-  ___ -> cardio
+```{r import2, record='RODFS', object='cardio2'}
+cardio2 <- read("___")
 ```
 
-<!--# La description des données n'est pas réalisée dans ce carnet de notes. Cette étape a déjà été réalisée dans le carnet de notes cardio_proportions.qmd-->
+<!--% Divisez votre jeu de données en cardio3_train et cardio3_test (2/3 en apprentissage, stratifié en fonction de cardio) -->
 
-<!--% Divisez votre jeu de données en cardio_train et cardio_test (2/3 en apprentissage) -->
-
-```{r split}
+```{r split, record='RODFS', object='cardio2_train'}
 set.seed(8945611)
-cardio_split <- ____
-cardio_train <- training(___)
-cardio_test <- testing(___)
+cardio2_split <- initial_split(___)
+cardio2_train <- ___
+cardio2_test <- ___
 ```
 
 ## Forêt aléatoire
 
-<!--% Entraînez un classifieur par forêt aléatoire sur cardio_train afin de prédire la variable `cardio`. Limitez le nombre d'arbre à 80. -->
+Nous entraînons un classifieur forêt aléatoire et étudions ses performances sur base de courbes ROC.
 
-```{r rf, record='ROP', object='cardio_rf', arg='ntree,mtry'}
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio_train afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 200 (considérez que vous avez obtenu cette valeur sur base d'une optimisation étape par étape de votre classifieur). -->
+
+```{r rf, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
-cardio_rf <- ____
+cardio2_rf <- mlRforest(data = ___,  ___)
 ```
 
-<!--% Graphique de l'erreur en fonction du nombre d'arbres -->
-
-```{r}
-plot(cardio_rf)
-```
+Les probabilités d'appartenance aux deux catégories relatives aux maladies cardiovasculaires sont calculées. Voici ci-dessous les résultats pour six cas du set de test :
 
 <!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur en utilisant le set de test -->
 
-```{r rf_mem, record='ROMD5', object='cardio_rf_mem'}
-cardio_rf_mem <- predict(____, ____, type = "___")
-head(cardio_rf_mem)
+```{r rf_mem, record='ROMD5', object='cardio2_rf_mem'}
+cardio2_rf_mem <- predict(___, ___, type = "___")
+head(cardio2_rf_mem)
 ```
+
+Voici la courbe ROC pour notre classifieur à forêt aléatoire.
 
 <!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr -->
 
-```{r rf_roc, record='ROMD5', object='cardio_rf_perf'}
-cardio_rf_predobj <- prediction(___)
+```{r rf_roc, record='ROMD5', object='cardio2_rf_perf'}
+# 1) Créer un objet prediction
+cardio2_rf_predobj <- prediction(___,
+  ___ == "présence")
 # 2) Calculer les performances avec les deux métriques tpr et fpr
-cardio_rf_perf <- performance(___, "tpr", "fpr")
-# 3) Tracer notre graphique ROC
-plot(cardio_rf_perf)
+cardio2_rf_perf <- ___
+# 3) Tracer le graphique ROC
+___
 abline(a = 0, b = 1, lty = 2)
 ```
 
-<!-- Calculez l'aire sous la courbe ROC -->
+L'aire sous la courbe est :
 
-```{r rf_auc}
+<!-- Calculez l'aire sous la courbe ROC. -->
+
+```{r rf_auc, record='RNA', arg='class'}
 ___
 ```
-
-<!--% Décrivez ce classifieur en 5 phrases maxi -->
-
-...Description des optimisations et des résultats obtenus...
 
 ## Machine à vecteurs supports
 
-<!--% Calculez un second classifieur à l'aide de la machine à vecteurs supports à l'aide du même set d'apprentissage -->
+Nous réalisons un second classifieur à vecteurs supports en utilisant un noyau radial.
+
+<!--% Entraînez un second classifieur à l'aide de la machine à vecteurs supports avec le même set d'apprentissage -->
 
 <!--# La méthode SVM a beaucoup de paramètres à optimiser, mais dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
 
-```{r svm, record='ROP', object='cardio_svm', arg='probA,probB'}
+```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB'}
 set.seed(487063)
-cardio_svm <- ___
+cardio2_svm <- mlSvm(data = ___, ___)
 ```
 
-<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test -->
+Voici les probabilités d'appartenance aux deux catégories pour les six premiers cas du set de test :
 
-```{r svm_mem, record='ROMD5', object='cardio_svm_mem'}
-cardio_svm_mem <- ___(___, ___, type = "___")
-head(cardio_svm_mem)
+<!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test. -->
+
+```{r svm_mem, record='ROMD5', object='cardio2_svm_mem'}
+cardio2_svm_mem <- ___
+head(cardio2_svm_mem)
 ```
 
-<!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr -->
+La courbe ROC pour ce classifieur à vecteurs supports donne ceci :
 
-```{r svm_roc, record='ROMD5', object='cardio_svm_perf'}
-cardio_svm_predobj <- prediction(___)
-cardio_svm_perf <- performance(___, "tpr", "fpr")
-plot(cardio_svm_perf)
+<!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr. -->
+
+```{r svm_roc, record='ROMD5', object='cardio2_svm_perf'}
+# 1) Créer un objet prediction
+cardio2_svm_predobj <- ___(___,
+  ___)
+# 2) Calculer les performances avec les deux métriques tpr et fpr
+cardio2_svm_perf <- ___
+# 3) Tracer le graphique ROC
+___
 abline(a = 0, b = 1, lty = 2)
 ```
 
-<!-- Calculez l'aire sous la courbe ROC -->
+L'aire sous la courbe est :
 
-```{r svm_auc}
+<!-- Calculez l'aire sous la courbe ROC. -->
+
+```{r svm_auc, record='RNA', arg='class'}
 ___
 ```
 
-<!--% Décrivez ci-dessous votre classifieur, les résultats de ce dernier en tenant compte des probabilités a priori en 5 phrases max. -->
-
-...Description des optimisations et des résultats obtenus...
-
 ## Comparaison des deux classifieurs
 
-<!--% Comparez les deux classifieurs en affichant leurs courbes ROC sur un même graphique -->
+Nous comparons le classifieur à forêt aléatoire et le classifieur machine à vecteurs supports sur base de leurs courbes ROC respectives ci-dessous.
+
+<!--% Comparez les deux classifieurs en affichant leurs courbes ROC sur un même graphique (le code est rédigé pour vous, vous n'avez rien à changer mais assurez-vous de bien le comprendre). -->
 
 ```{r roc_compa}
-plot(___, col = "darkgreen")
-# Ajout de celui relatif à pima1b sur le même graphique
-plot(___, col = "darkred", add = ___)
+# Courbe ROC pour le classifieur forêt aléatoire
+plot(cardio2_rf_perf, col = "darkgreen")
+# Ajout de celui à vecteurs supports
+plot(cardio2_svm_perf, col = "darkred", add = TRUE)
 abline(a = 0, b = 1, lty = 2)
-legend("bottomright", inset = 0.1, legend = c("rf", "svm"), lty = 1,
+legend("bottomright", inset = 0.1,
+  legend = c("Forêt aléatoire", "Machine à vecteurs supports"), lty = 1,
   col = c("darkgreen", "darkred"))
 ```
 
-<!--% Comparez les deux courbes ROC en 3 phrases. -->
-
-...Comparaison des résultats obtenus...
-
 # Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-ce que ce classifieur est meilleur en toutes circonstances (quelle que soit la prévalence de la maladie) ? -->
+<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-il le meilleur quel que soit le seuil de détection retenu ? -->
 
 ...votre discussion ici...
+
+<!--# Les combinaisons utilisées ici (train/test + courbes ROC) pour comparer deux algorithmes de classification, ou dans le document cardio_proportions.qmd (validation croisée et manipulation des propriétés/des priors) peuvent être recombinées à souhait. Il est possible d'utiliser la validation croisée partout, sauf si l'on a dupliqué les items, tout comme il est possible d'utiliser la séparation en set d'apprentissage et de test partout (avec des temps de calcul plus rapides) si le nombre d'items est suffisant. De même, les métriques issues de la matrice de confusion et les courbes ROC se complètent plus qu'elles ne sont en concurrence pour vous permettre de choisir le meilleur classifieur. Ici, pour l'exercice, les deux sont compartimentés dans deux fichiers différents, mais rien ne vous empêche de les utiliser de manière concomitante pour vos classifieurs binaires. -->
 
 # Références
