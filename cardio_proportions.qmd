@@ -71,7 +71,7 @@ En absence d'informations supplémentaires et dans l'impossibilité de vérifier
 
 <!--# Ce jeu de données contient pas mal d'erreurs et est peu documenté. Il est pourtant considéré sur Kaggle comme intéressant (et nous partageons cet avis). En effet, il est représentatif de données réelles issues de la compilation de diverses sources avant nettoyage. Ceci est très loin des jeux de données "exemples" souvent utilisés en cours de statistique où tout paraît parfait d'emblée. À notre avis, il est bien plus instructif de travailler avec ce genre de données plus proches de la réalité ! -->
 
-<!--% Convertissez age en années, weight en kg (réellement en kg !), et retirez id. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 50 et inférieure à 220 et une pression diastolique supérieure à 60 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
+<!--% Convertissez age en années, weight en kg (réellement en kg !), et retirez id. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 60 et inférieure à 220 et une pression diastolique supérieure à 50 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
 
 ```{r clean, record='RODFS', object='cardio2'}
 cardio %>.%
