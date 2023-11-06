@@ -92,7 +92,7 @@ La corrélation entre les variables quantitatives est une indication utile. Des 
 
 ```{r corr, record='ROSTR', object='cardio2_corr', arg='dimnames,method,na.method,class'}
 cardio2 %>.%
-  sselect(., ___:___) %>.%
+  sselect(., ___, ___:___) %>.%
   ___(.) ->
   cardio2_corr
 ___(cardio2_corr)
