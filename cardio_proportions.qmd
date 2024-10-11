@@ -52,9 +52,11 @@ select_answer(r"-{
 [] -   Le jeu de données contient 3000 cas et 13 attributs dont 7 sont qualitatifs et 6 sont quantitatifs.
 [] -   Le jeu de données contient 3000 cas et 13 variables avec 6 attributs qualitatifs et 6 attributs quantitatifs.
 [] -   Le jeu de données contient 3000 cas et 13 variables avec 6 attributs qualitatifs et 5 attributs quantitatifs.
+
 [] -   Aucune donnée n'est manquante.
 [] -   Une donnée est manquante.
 [] -   Plusieurs données sont manquantes.
+
 [] -   Les données quantitatives sont toutes dans des plages de valeurs plausibles.
 [] -   L’âge étant exprimé en jours, nous le convertirons en années pour plus de lisibilité.
 [] -   Une ou plusieurs données de taille sont aberrantes car la taille minimale est de 74cm alors que l'âge minimal est de 14327 jours, soit 14327/365 = 39 ans.
@@ -76,11 +78,11 @@ En absence d'informations supplémentaires et dans l'impossibilité de vérifier
 ```{r clean, record='RODFS', object='cardio2'}
 cardio %>.%
   smutate(., age = labelise(___, "Âge", units = "années"), weight = ___) %>.%
-  sselect(., ___) %>.%
+  sselect(., __) %>.%
   sfilter(., height ___) %>.%
   sfilter(., ap_hi ___ & ___) %>.%
   sfilter(., ap_lo ___ & ___) %>.%
-  sfilter(.,___ < ___) ->
+  sfilter(., ___ < ___) ->
   cardio2
 # cardio plus nécessaire
 rm(cardio)
@@ -103,6 +105,7 @@ select_answer(r"-{
 [] -   Les corrélations de Spearman vont de 0.02 à 0.72.
 [] -   Les corrélations de Pearson vont de 0.02 à 0.72.
 [] -   Les corrélations de Kendall vont de 0.02 à 0.72.
+
 [] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques, mais avec 0.72, elles restent raisonnables.
 [] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques. À 0.72 il y a redondance entre les deux variables et il vaut mieux en éliminer une des deux.}-")
 ```
@@ -122,7 +125,7 @@ cardio2 %>.%
   smutate(.,
     bmi   = labelise(___, label = "IMC", units = "kg/m^2"),
     pulse = labelise(___, label = "Pression de poul", units = "mmHg"),
-    map   = labelise(___, label = "Pression artérielle moyenne", units = "mmHg")) ->
+    map   = labelise((___, label = "Pression artérielle moyenne", units = "mmHg")) ->
   cardio2
 write$rds(cardio2, "data/cardio2.rds")
 ```
@@ -131,16 +134,16 @@ Comment se répartissent les données en fonction de la présence ou non de mala
 
 <!-- Réalisez une table de contingence à double entrée de la présence ou non de la maladie en fonction du genre. -->
 
-```{r table, record='RNA', arg='col_keys'}
+```{r table, record='RNA', arg='col_keys', warning=FALSE}
 table(___, ___) |> 
   tabularise()
 ```
 
 <!-- Réalisez un graphique en barres de la présence ou non de maladie cardiovasculaire en fonction de l'âge (arrondi à l'année vers le bas) avec les barres de présence et d'absence l'une à côté de l'autre pour chaque année. -->
 
-```{r plot, record='RNSTR', arg='labels,layers'}
+```{r plot, record='RNCS'}
 cardio2 %>.%
-  smutate(., age = ___) %>.%
+  smutate(., age = ___ %>.%
   chart(data = ., ___) +
     ___(position = "___")
 ```
@@ -151,9 +154,11 @@ cardio2 %>.%
 select_answer(r"-{
 [] -   La proportion d'hommes et de femmes est égale dans les données.
 [] -   La proportion d'hommes et de femmes est inégale.
+
 [] -   Les proportions des patients sont en adéquation avec la prévalence de ces maladies aux USA.
 [] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes saines sont surreprésentées.
 [] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes malades sont surreprésentées.
+
 [] - Plus les personnes sont âgées, plus elles sont susceptibles d’être malades.
 [] - Plus les personnes sont âgées, moins elles sont susceptibles d’être malades.
 [] - La présence de maladies cardiovasculaires est identique au cours du temps.}-")
@@ -167,7 +172,7 @@ select_answer(r"-{
 
 ```{r rforest, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
-cardio2_rf <- mlRforest(data = ___,  ___)
+cardio2_rf <- ml_rforest(data = ___,  ___)
 ```
 
 <!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois. -->
@@ -217,7 +222,7 @@ Notre but étant de détecter les patients *à risque* de maladies cardiovascula
 
 <!--% Sélectionnez la totalité des patients positifs et la moitié patients négatifs au hasard. Employez la fonction over_undersample() pour ce faire. Les nouvelles seront placées dans cardio3. -->
 
-```{r cardio_prop, record='RODFS', object='cardio3'}
+```{r cardio_prop, record='RODFS', object='cardio3', warning=FALSE}
 # Récupération de la fonction over_undersample() depuis R/functions.R
 source("R/functions.R")
 set.seed(9856)

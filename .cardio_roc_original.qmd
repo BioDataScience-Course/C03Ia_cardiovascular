@@ -55,7 +55,7 @@ Nous entraînons un classifieur forêt aléatoire et étudions ses performances 
 
 ```{r rf, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
-cardio2_rf <- mlRforest(data = ___,  ___)
+cardio2_rf <- ml_rforest(data = ___,  ___)
 ```
 
 Les probabilités d'appartenance aux deux catégories relatives aux maladies cardiovasculaires sont calculées. Voici ci-dessous les résultats pour six cas du set de test :
@@ -100,7 +100,7 @@ Nous réalisons un second classifieur à vecteurs supports en utilisant un noyau
 
 ```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB'}
 set.seed(487063)
-cardio2_svm <- mlSvm(data = ___, ___)
+cardio2_svm <- ml_svm(data = ___, ___)
 ```
 
 Voici les probabilités d'appartenance aux deux catégories pour les six premiers cas du set de test :

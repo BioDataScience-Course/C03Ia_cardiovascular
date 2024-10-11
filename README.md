@@ -1,12 +1,10 @@
 # Classification supervisée pour détecter des patients atteints de maladie cardiovasculaire
 
-## Avant-propos
-
 Ce projet nécessite d'avoir assimilé l'ensemble des notions des trois premiers modules du cours de science des données biologiques 3. Il correspond au dépôt GitHub <https://github.com/BioDataScience-Course/C03Ia_cardiovascular>.
 
 ## Objectif
 
-Ce projet est **court**, **individuel** et **cadré**. Il vise à compléter votre apprentissage dans la réalisation, l'interprétation et l'évaluation des performances de classifieurs machine. Dans ce projet, vous devrez :
+Ce projet est **court**, **individuel** et **cadré**. Il vise à compléter votre apprentissage dans la réalisation, l'interprétation et l'évaluation des performances de classifieurs machine. Dans ce projet, vous devez :
 
 -   Appréhender un jeu de données et y effectuer des transformations en vue de classification supervisée (feature engineering)
 

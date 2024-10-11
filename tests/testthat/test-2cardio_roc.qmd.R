@@ -168,7 +168,7 @@ test_that("Chunks 'svm', `svm_mem', 'svm_roc' & 'svm_auc' : machine à vecteurs 
 })
 
 test_that("La partie discussion et conclusion est-elle remplie ?", {
-  expect_true(!(rmd_select(prop, by_section("Discussion et conclusion")) |>
+  expect_true(!(rmd_select(roc, by_section("Discussion et conclusion")) |>
     as_document() |> grepl("...votre discussion ici...", x = _,
       fixed = TRUE) |> any()))
   # La discussion et la conclusion ne sont pas faites
