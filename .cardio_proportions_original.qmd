@@ -32,7 +32,7 @@ Le but de ce travail est de déterminer si, à partir de données générales fa
 
 Les données employées sont un sous-ensemble d'un jeu de données disponibles sur Kaggle ([Cardiovascular Disease dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset)) qui contient 70.000 observations (voir \`R/import_cardio.R\`). Diverses informations ont été collectées sur des patients atteints ou non de maladies cardiovasculaires. Ces données sont en partie fournies par le patient lui-même et en parties issues d'un bilan médical. Les variables sont décrites (métadonnées), mais l'origine et le plan d'échantillonnage ne sont pas indiqués. Nous considérerons la situation la plus probable qui est que ces données proviennent d'un système informatisé de gestion de dossiers médicaux à l'échelle d'une région ou d'un pays (la taille de l'échantillon permet de considérer que cela concerne probablement plus d'un seul hôpital, aussi grand soit-il). Étant donné la répartition en sous-groupes, notamment pour la présence ou l'absence de maladie cardiovasculaire (à peu près 50%/50%, voir description des données), l'échantillonnage n'est certainement pas aléatoire. Il est probable qu'il soit stratifié par rapport à ce critère. En absence de plus d'information, nous le traiterons comme tel.
 
-L'analyse est réalisée avec la [SciViews Box 2023](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux), utilisant le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
+L'analyse est réalisée avec la [SciViews Box 2024](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux), utilisant le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
 
 # Résultats
 
@@ -73,7 +73,7 @@ En absence d'informations supplémentaires et dans l'impossibilité de vérifier
 
 <!--# Ce jeu de données contient pas mal d'erreurs et est peu documenté. Il est pourtant considéré sur Kaggle comme intéressant (et nous partageons cet avis). En effet, il est représentatif de données réelles issues de la compilation de diverses sources avant nettoyage. Ceci est très loin des jeux de données "exemples" souvent utilisés en cours de statistique où tout paraît parfait d'emblée. À notre avis, il est bien plus instructif de travailler avec ce genre de données plus proches de la réalité ! -->
 
-<!--% Convertissez age en années, weight en kg (réellement en kg !), et retirez id. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 60 et inférieure à 220 et une pression diastolique supérieure à 50 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
+<!--% Convertissez age en années (une année comprend environ 365 jours), weight en kg (réellement en kg !), et retirez id. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 60 et inférieure à 220 et une pression diastolique supérieure à 50 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
 
 ```{r clean, record='RODFS', object='cardio2'}
 cardio %>.%
