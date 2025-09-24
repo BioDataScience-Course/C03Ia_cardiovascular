@@ -1,6 +1,6 @@
 Package: C03Ia_cardiovascular
 Type: Package
-Version: 2.1.0
+Version: 2.2.0
 Title: Classification binaire relative aux maladies cardiovasculaires
 Description: Projet individuel cadré du module 3 du cours SDD III à l'UMONS
 Authors@R: c(
