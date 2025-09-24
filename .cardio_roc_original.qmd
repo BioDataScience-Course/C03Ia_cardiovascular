@@ -1,5 +1,5 @@
 ---
-title: "Détection de maladies cardiovasculaire"
+title: "Détection de maladies cardiovasculaires"
 subtitle: "Comparaison de classifieurs via les courbes ROC"
 author: "___"
 date: "`r Sys.Date()`"
@@ -14,11 +14,14 @@ bibliography: biblio/references.bib
 ---
 
 ```{r setup, include=FALSE}
-# This is needed to the SDD test suite, do not use in a "real" project
+# Ceci est nécessaire pour les tests SDD, ne pas utiliser dans un "vrai" projet
 if (!"tools:tests" %in% search())
   source(here::here("tests/tools_tests.R"), attach(NULL, name = "tools:tests"))
 
-# Configure SciViews::R environment
+# Configure Knitr pour utiliser RAGG comme périphérique graphique
+knitr::opts_chunk$set(dev = "ragg_png")
+
+# Configure l’environnement SciViews::R
 SciViews::R("ml", lang = "fr")
 ```
 
@@ -32,13 +35,13 @@ Les données proviennent du jeu vérifié et remanié dans `cardio_propotions.qm
 
 # Résultats
 
-Les données sont nettoyées, et de nouvelles variables sont calculées dans `cardio_proportions.qmd`. Nous repartons ici du même jeu de données `cardio3`.
+Les données sont nettoyées, et de nouvelles variables sont calculées dans `cardio_proportions.qmd`. Nous repartons ici du même jeu de données `cardio2`.
 
 ```{r import2, record='RODFS', object='cardio2'}
 cardio2 <- read("___")
 ```
 
-<!--% Divisez votre jeu de données en cardio3_train et cardio3_test (2/3 en apprentissage, stratifié en fonction de cardio) -->
+<!--% Divisez votre jeu de données en cardio2_train et cardio2_test (2/3 en apprentissage, stratifié en fonction de la variable `cardio`) -->
 
 ```{r split, record='RODFS', object='cardio2_train'}
 set.seed(8945611)
@@ -49,7 +52,7 @@ cardio2_test <- ___
 
 ## Forêt aléatoire
 
-Nous entraînons un classifieur forêt aléatoire et étudions ses performances sur base de courbes ROC.
+Nous entraînons un classifieur par forêt aléatoire et étudions ses performances sur base de courbes ROC.
 
 <!--% Entraînez un classifieur par forêt aléatoire sur cardio_train afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 200 (considérez que vous avez obtenu cette valeur sur base d'une optimisation étape par étape de votre classifieur). -->
 
@@ -96,7 +99,7 @@ Nous réalisons un second classifieur à vecteurs supports en utilisant un noyau
 
 <!--% Entraînez un second classifieur à l'aide de la machine à vecteurs supports avec le même set d'apprentissage -->
 
-<!--# La méthode SVM a beaucoup de paramètres à optimiser, mais dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
+<!--# La méthode SVM a beaucoup de paramètres à optimiser. Dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
 
 ```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB'}
 set.seed(487063)
@@ -154,7 +157,7 @@ legend("bottomright", inset = 0.1,
 
 # Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-il le meilleur quel que soit le seuil de détection retenu ? -->
+<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-il le meilleur, quel que soit le seuil de détection retenu ? -->
 
 ...votre discussion ici...
 

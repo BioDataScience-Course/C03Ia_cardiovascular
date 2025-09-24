@@ -9,7 +9,7 @@ test_that("Le bloc-notes est-il compilé en un fichier final HTML ?", {
   # Vérifiez aussi que ce rendu se réalise sans erreur, sinon, lisez le message
   # qui s'affiche dans l'onglet 'Travaux' et corrigez ce qui ne va pas dans
   # votre document avant de réaliser à nouveau un rendu HTML.
-  # IL EST TRES IMPORTANT QUE VOTRE DOCUMENT COMPILE ! C'est tout de même le but
+  # IL EST TRÈS IMPORTANT QUE VOTRE DOCUMENT COMPILE ! C'est tout de même le but
   # de votre analyse que d'obtenir le document final HTML.
 
   expect_true(is_rendered_current("cardio_proportions.qmd"))
@@ -92,7 +92,7 @@ test_that("Chunks 'import' & 'importcomment' : importation des données", {
   expect_true(is_identical_to_ref("importcomment"))
   # L'interprétation des tableaux de description des données est (partiellement)
   # fausse
-  # Vous devez cochez les phrases qui décrivent le graphique d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le graphique d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -122,7 +122,7 @@ test_that("Chunks 'corr', 'corrcomment' : Corrélation entre attributs", {
 
   expect_true(is_identical_to_ref("corrcomment"))
   # L'interprétation du graphique des corrélations est (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent le graphique d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le graphique d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -134,7 +134,7 @@ test_that("Chunk 'newvars' : Calcul de nouvelles variables", {
   # Les colonnes dans le tableau `cardio2` après ajout de variables calculées ne
   # sont pas celles attendues
   # Vérifiez vos calculs des trois nouvelles variables. Visualisez le tableau
-  # obtenu et regarder les nouvelles colonnes pour voir ce qui ne va pas. Ce
+  # obtenu et regardez les nouvelles colonnes pour voir ce qui ne va pas. Ce
   # test échoue si vous n'avez pas bien rempli le code du chunk 'newvars'.
 
   expect_true(is_identical_to_ref("newvars", "classes"))
@@ -151,7 +151,7 @@ test_that("Chunk 'newvars' : Calcul de nouvelles variables", {
 
 test_that("Chunks 'table', 'plot', 'plotcomment' : Description des données par rapport à cardio", {
   expect_true(is_identical_to_ref("table"))
-  # La table de contingence à double entrée n'est pas réalisé ou est incorrecte
+  # La table de contingence à double entrée n'est pas réalisée ou est incorrecte
   # Relisez les consignes et vérifiez votre code : vous devez préciser d'abord
   # cardio et puis gender pour obtenir la même table que celle de référence.
 
@@ -164,7 +164,7 @@ test_that("Chunks 'table', 'plot', 'plotcomment' : Description des données par 
 
   expect_true(is_identical_to_ref("plotcomment"))
   # L'interprétation du graphique et du tableau est (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent le graphique d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le graphique d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -174,18 +174,18 @@ test_that("Chunks 'table', 'plot', 'plotcomment' : Description des données par 
 test_that("Chunks 'rforest', `rf_confusion', 'rf_metrics' & 'rf_metrics_corr' :
   forêt aléatoire", {
   expect_true(is_identical_to_ref("rforest"))
-  # Le classifieur forêt aléatoire n'est pas réalisé ou est différent de
+  # Le classifieur par forêt aléatoire n'est pas réalisé ou est différent de
   # celui considéré comme optimal par vos enseignants.
   # Les consignes devraient vous guider pour réaliser le même classifieur.
 
   expect_true(is_identical_to_ref("rf_confusion"))
   # Vous n'avez pas obtenu la même matrice de confusion pour le classifieur
-  # forêt aléatoire que vos enseignants, ou vous ne l'avez pas calculée.
+  #  par forêt aléatoire que vos enseignants, ou vous ne l'avez pas calculée.
   # Vérifiez vos calculs. N'oubliez pas que l'on vous demande de calculer cette
   # matrice de confusion à l'aide de la validation croisée 5 fois.
 
   expect_true(is_identical_to_ref("rf_metrics"))
-  # Le calcul des métriques de performance pour votre classifieur forêt
+  # Le calcul des métriques de performance pour votre classifieur par forêt
   # aléatoire n'est pas fait, ou n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu
   # du document Quarto pour revérifier. Considérez bien que l'on vous demande de
@@ -211,7 +211,7 @@ test_that("Chunks 'varimp', 'varimpcomment' : Importance des variables", {
   expect_true(is_identical_to_ref("varimpcomment"))
   # L'interprétation du graphique de l'importance des variables est
   # (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent le graphique d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le graphique d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -223,7 +223,7 @@ test_that("Chunk 'cardio_prop' : Modification des proportions dans cardio3", {
   # Les colonnes dans le tableau `cardio3` après modification des propotions ne
   # sont pas celles attendues
   # Vérifiez vos calculs avec over_undersample(). Vous devez indiquer le poids
-  # (weight=) de 1 pour la présence et de 1/2 pour absence afin de réduire cette
+  # (weight=) de 1/2 pour absence  et de 1 pour la présence afin de réduire cette
   # dernière catégorie de moitié. Ce test échoue si vous n'avez pas bien rempli
   # le code du chunk 'cardio_prop'.
 
@@ -241,25 +241,25 @@ test_that("Chunk 'cardio_prop' : Modification des proportions dans cardio3", {
 
 test_that("Chunks 'rforest2', `rf_confusion2', 'rf_metrics2' & 'rf_metrics_corr2' : forêt aléatoire 2", {
   expect_true(is_identical_to_ref("rforest2"))
-  # Le classifieur forêt aléatoire n'est pas réalisé ou est différent de
+  # Le classifieur par forêt aléatoire n'est pas réalisé ou est différent de
   # celui considéré comme optimal par vos enseignants.
   # Les consignes devraient vous guider pour réaliser le même classifieur.
 
   expect_true(is_identical_to_ref("rf_confusion2"))
   # Vous n'avez pas obtenu la même matrice de confusion pour le classifieur
-  # forêt aléatoire que vos enseignants, ou vous ne l'avez pas calculée.
+  # par forêt aléatoire que vos enseignants, ou vous ne l'avez pas calculée.
   # Vérifiez vos calculs. N'oubliez pas que l'on vous demande de calculer cette
   # matrice de confusion à l'aide de la validation croisée 5 fois.
 
   expect_true(is_identical_to_ref("rf_metrics2"))
-  # Le calcul des métriques de performance pour votre classifieur forêt
+  # Le calcul des métriques de performance pour votre classifieur par forêt
   # aléatoire n'est pas fait, ou n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu
   # du document Quarto pour revérifier. Considérez bien que l'on vous demande de
   # restreindre le nombre de métriques à calculer.
 
   expect_true(is_identical_to_ref("rf_metrics_corr2"))
-  # Le calcul des métriques de performance corrigées pour votre classifieur
+  # Le calcul des métriques de performance corrigées pour votre classifieur par
   # forêt aléatoire n'est pas fait, ou n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu
   # du document Quarto pour revérifier. Les probabilités a priori doivent être

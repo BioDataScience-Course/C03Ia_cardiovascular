@@ -118,24 +118,24 @@ test_that("Chunk 'split' : séparation en sets d'apprentissage et de test", {
 
 test_that("Chunks 'rf', `rf_mem', 'rf_roc' & 'rf_auc' : forêt aléatoire et courbes ROC", {
   expect_true(is_identical_to_ref("rf"))
-  # Le classifieur forêt aléatoire n'est pas réalisé ou est différent de
+  # Le classifieur par forêt aléatoire n'est pas réalisé ou est différent de
   # celui considéré comme optimal par vos enseignants
   # Les consignes devraient vous guider pour réaliser le même classifieur.
 
   expect_true(is_identical_to_ref("rf_mem"))
-  # Vous n'avez pas obtenu la même matrice d'appartenance pour le classifieur
+  # Vous n'avez pas obtenu la même matrice d'appartenance pour le classifieur par
   # forêt aléatoire que vos enseignants, ou vous ne l'avez pas calculée
   # Vérifiez vos calculs.
 
   expect_true(is_identical_to_ref("rf_roc"))
-  # La courbe ROC de votre classifieur forêt aléatoire n'est pas calculée, ou
+  # La courbe ROC de votre classifieur par forêt aléatoire n'est pas calculée, ou
   # n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu
   # du document Quarto pour revérifier. Vous devez utiliser les métriques tpr et
   # fpr.
 
   expect_true(is_identical_to_ref("rf_auc"))
-  # Le calcul de l'aire sous la courbe ROC pour votre classifieur forêt
+  # Le calcul de l'aire sous la courbe ROC pour votre classifieur par forêt
   # aléatoire n'est pas fait, ou n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu
   # du document Quarto pour revérifier.
