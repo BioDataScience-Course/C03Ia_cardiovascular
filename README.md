@@ -1,4 +1,4 @@
-# Classification supervisée pour détecter des patients atteints de maladie cardiovasculaire
+# SDD III module 3 : Classification supervisée pour détecter des patients atteints de maladie cardiovasculaire
 
 Ce projet nécessite d'avoir assimilé l'ensemble des notions des trois premiers modules du cours de science des données biologiques 3. Il correspond au dépôt GitHub <https://github.com/BioDataScience-Course/C03Ia_cardiovascular>.
 
@@ -25,3 +25,7 @@ Complétez les zones manquantes dans le fichier `cardio_proportions.qmd`. Ensuit
 Les données employées (`data/cardio.rds`) sont un sous-ensemble de 3000 items issus d'un jeu de données nommé `cardio_train.csv` qui reprend 70.000 observations. Les données originales complètes proviennent du site Kaggle sous le nom [**Cardiovascular Disease dataset**](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset). Dans cet exercice, la taille du jeu de données a été réduite pour diminuer le temps de calcul et vous permettre d'expérimenter différentes options dans un délai raisonnable dans votre machine virtuelle Saturn Cloud.
 
 Des métadonnées sont mises à disposition dans la page Kaggle (prenez toujours bien connaissance des informations disponibles avant de commencer à analyser un jeu de données).
+
+## Utilisation de l’IA
+
+Dans le cadre de votre travail, vous avez le droit d’être aidé par l’intelligence artificielle. Le chatbot SciViews est disponible dans votre RStudio sur Saturn Cloud via l’addin Help. Il répond aux questions concernant le langage R, les statistiques et la science des données.
