@@ -10,6 +10,8 @@ format:
     toc: true
 editor: visual
 lang: fr
+svbox: 2026
+vm: "Ubuntu 24.04.3 LTS"
 bibliography: biblio/references.bib
 ---
 
@@ -35,7 +37,17 @@ Le but de ce travail est de déterminer si, à partir de données générales fa
 
 Les données employées sont un sous-ensemble d'un jeu de données disponibles sur Kaggle ([Cardiovascular Disease dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset)) qui contient 70.000 observations (voir \`R/import_cardio.R\`). Diverses informations ont été collectées sur des patients atteints ou non de maladies cardiovasculaires. Ces données sont en partie fournies par le patient lui-même et en parties issues d'un bilan médical. Les variables sont décrites (métadonnées), mais l'origine et le plan d'échantillonnage ne sont pas indiqués. Nous considérerons la situation la plus probable qui est que ces données proviennent d'un système informatisé de gestion de dossiers médicaux à l'échelle d'une région ou d'un pays (la taille de l'échantillon permet de considérer que cela concerne probablement plus d'un seul hôpital, aussi grand soit-il). Étant donné la répartition en sous-groupes, notamment pour la présence ou l'absence de maladie cardiovasculaire (à peu près 50%/50%, voir description des données), l'échantillonnage n'est certainement pas aléatoire. Il est probable qu'il soit stratifié par rapport à ce critère. En absence de plus d'information, nous le traiterons comme tel.
 
-L'analyse est réalisée avec la [SciViews Box 2025](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (Linux), utilisant le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
+L'analyse est réalisée dans la [SciViews Box `r rmarkdown::metadata$svbox`](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (`r rmarkdown::metadata$vm`) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
+
+<!--% Spécifier si vous avez employé l'intelligence artificielle dans votre projet. -->
+
+```{r ai_comment, output='asis'}
+select_answer(r"-{
+[] -   Ce document a été rédigé en étant assisté par l'Intelligence Artificielle.
+[] -   Ce document a été rédigé sans recours à l'Intelligence Artificielle.}-")
+```
+
+<!-- Précisez ci-dessous l'utilisation que vous avez faite de l'IA. Citez le modèle utilisé. -->
 
 # Résultats
 
@@ -44,7 +56,7 @@ Voici la description générale des données :
 <!--% Importez les données cardio.rds et réalisez une description globale du jeu de données avec la fonction skim() du package {skimr}. -->
 
 ```{r import, record='RODFS', object='cardio'}
-cardio <- read("___")
+cardio <- read(___)
 skimr::skim(cardio)
 ```
 
@@ -97,10 +109,10 @@ La corrélation entre les variables quantitatives est une indication utile. Des 
 
 ```{r corr, record='ROSTR', object='cardio2_corr', arg='dimnames', warning=FALSE}
 cardio2 %>.%
-  sselect(., ___, ___:___) %>.%
-  ___(.) ->
+  sselect(., age, height:ap_lo) %>.%
+  correlation(.) ->
   cardio2_corr
-___(cardio2_corr)
+plot(cardio2_corr)
 ```
 
 ```{r corrcomment, output='asis'}
@@ -115,22 +127,22 @@ select_answer(r"-{
 
 Sur base de mesures communément utilisées dans le domaine, nous pouvons calculer quelques variables dérivées potentiellement utiles :
 
--   L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
+- L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
 
--   La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
+- La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
 
--   La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
+- La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
 
 <!--% Calculez ces trois variables dérivées supplémentaires ci-dessous. Enregistrez cardio2 au format rds dans le dossier data pour réutilisation dans le second document Quarto. -->
 
 ```{r newvars, record='RODFS', object='cardio2'}
 cardio2 %>.%
   smutate(.,
-    bmi   = labelise(___, label = "IMC", units = "kg/m^2"),
-    pulse = labelise(___, label = "Pression de poul", units = "mmHg"),
-    map   = labelise((___, label = "Pression artérielle moyenne", units = "mmHg")) ->
-  cardio2
-write$rds(cardio2, "data/cardio2.rds")
+          bmi   = labelise(___, label = "IMC", units = "kg/m^2"),
+          pulse = labelise(___, label = "Pression de poul", units = "mmHg"),
+          map   = labelise((___, label = "Pression artérielle moyenne", units = "mmHg")) ->
+            cardio2
+          write$rds(cardio2, "data/cardio2.rds")
 ```
 
 Comment se répartissent les données en fonction de la présence ou non de maladie cardiovasculaire et en fonction du genre ou de l'âge ?
@@ -147,9 +159,9 @@ table(___, ___) |>
 ```{r plot, record='RNCS'}
 cardio2 %>.%
   smutate(., age = ___ %>.%
-  chart(data = ., ___) +
-    ___(position = "___") +
-  ylab("Dénombrement")
+            chart(data = ., ___) +
+            ___(position = "___") +
+            ylab("Dénombrement")
 ```
 
 <!--% Interprétez le tableau de contingence et le graphique. -->
@@ -176,7 +188,7 @@ select_answer(r"-{
 
 ```{r rforest, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
-cardio2_rf <- ml_rforest(data = ___,  ___)
+cardio2_rf <- ml_rforest(data = ___)
 ```
 
 <!--% Calculez et visualisez la matrice de confusion par validation croisée cinq fois. -->
@@ -187,7 +199,7 @@ cardio2_rf_conf <- confusion(cvpredict(___), ___)
 plot(cardio2_rf_conf)
 ```
 
-<!--% Calculez les métriques globales et plus précisément le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
+<!--% Calculez les métriques globales, ainsi que le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
 
 ```{r rf_metrics, record='RNA', arg='names,class'}
 summary(___, type = ___)
@@ -224,7 +236,7 @@ select_answer(r"-{
 
 Notre but étant de détecter les patients *à risque* de maladies cardiovasculaires, nous souhaitons maximiser le rappel pour la présence de la maladie. Ici, la réduction de la précision (fausses alertes) n'est pas grave, car les patients retenus subiront des analyses plus approfondies ensuite, qui permettront de séparer les vrais des faux positifs. Une des façons d'y arriver est de modifier les proportions des deux classes dans le set d'apprentissage. Ici, nous nous arrangeons pour avoir deux fois plus de cas malades que de cas sains et nous créons un nouveau classifieur.
 
-<!--% Sélectionnez la totalité des patients positifs et la moitié patients négatifs au hasard. Employez la fonction over_undersample() pour ce faire. Les nouvelles seront placées dans cardio3. -->
+<!--% Sélectionnez la moitié des patients négatifs au hasard et la totalité des patients positifs. Employez la fonction over_undersample() pour ce faire. Cette sélection sera  assignée à cardio3. -->
 
 ```{r cardio_prop, record='RODFS', object='cardio3', warning=FALSE}
 # Récupération de la fonction over_undersample() depuis R/functions.R
@@ -237,7 +249,7 @@ cardio3 <- ___
 table(cardio3$cardio) |> 
   tabularise() |>
   Stb$set_header_labels(values = c("Maladie cardiovasculaire",
-    "Nombre de patients", "Pourcentage"))
+                                   "Nombre de patients", "Pourcentage"))
 ```
 
 <!--% Entraînez un classifieur par forêt aléatoire sur `cardio3` afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 100 comme dans le précédent. Utilisez la validation croisée 5 fois pour calculer la matrice de confusion et les métriques.-->
@@ -255,7 +267,7 @@ cardio3_rf_conf <- ___
 plot(cardio3_rf_conf)
 ```
 
-<!--% Calculez les métriques globales et plus précisément le score F, le rappel et la précision par classe (pas toutes les métriques !). -->
+<!--% Calculez les métriques globales et plus précisément le score F, le rappel et la précision par classe (pas toutes les métriques !) -->
 
 ```{r rf_metrics2, record='RNA', arg='names,class'}
 ___
@@ -272,8 +284,33 @@ ___
 
 # Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 3 à 6 phrases maximum quel classifieur vous considérez comme le meilleur et s'il vous parait adéquat ici pour un déploiement par rapport au but fixé (discutez à la fois du rappel et de la précision des deux classifieurs réalisés). -->
+<!--% Sélectionnez les phrases qui indiquent quel classifieur est le meilleur et s'il est adéquat pour un déploiement par rapport au but fixé (en considérant à la fois le rappel et la précision des deux classifieurs réalisés, après correction des probabilités a priori). -->
 
-...votre discussion ici...
+```{r discussion, output='asis'}
+select_answer(r"-{
+[] -   Après correction des probabilités *a priori*, le second classifieur (entraîné avec deux fois plus de malades que de sains) détecte nettement mieux les malades : le rappel pour la présence de la maladie passe de 68% à 83%.
+[] -   Après correction des probabilités *a priori*, le rappel pour la présence de la maladie diminue de 83% à 68% avec le second classifieur.
+[] -   Le rappel pour la présence de la maladie est identique pour les deux classifieurs, seule la précision varie.
+
+[] -   Ce gain se paie par une baisse de la précision pour la présence de la maladie, qui passe de 17% à 13%. Environ 87% des patients signalés comme malades sont donc des faux positifs.
+[] -   Le second classifieur améliore à la fois le rappel et la précision pour la présence de la maladie.
+[] -   La précision pour la présence de la maladie reste supérieure à 70% pour les deux classifieurs.
+
+[] -   Sans correction des probabilités *a priori*, la précision pour la présence de la maladie serait largement surestimée (73% et 80% au lieu de 17% et 13%), car la prévalence réelle (7%) est bien plus faible que dans les sets d'apprentissage.
+[] -   La correction des probabilités *a priori* n'est pas nécessaire puisque les métriques sont calculées par validation croisée.
+
+[] -   Le taux d'erreur global (39% contre 25%) et le score F pour la présence de la maladie (0.23 contre 0.28) sont moins bons pour le second classifieur, mais ces métriques ne correspondent pas à l'objectif fixé.
+[] -   Le taux d'erreur global et le score F étant meilleurs pour le classifieur initial, c'est lui qu'il faut retenir.
+
+[] -   Le second classifieur est le meilleur par rapport au but fixé (détecter les patients à risque), car le rappel pour la présence de la maladie est la métrique à maximiser et la perte de précision est acceptable : les faux positifs seront écartés par des analyses plus approfondies.
+[] -   Le classifieur initial est le meilleur, car il a été entraîné sur des proportions balancées entre malades et non malades.
+
+[] -   Le second classifieur constitue une bonne base pour un dépistage de première ligne, mais il manque encore environ un malade sur six. Il serait souhaitable d'augmenter encore le rappel (par exemple, en déséquilibrant davantage les proportions dans le set d'apprentissage) avant un déploiement.
+[] -   Avec un rappel de 83%, le second classifieur ne manque pratiquement aucun malade et peut être déployé tel quel.
+[] -   Avec une précision de seulement 13%, le second classifieur est inutilisable en pratique.
+
+[] -   La qualité médiocre et la documentation lacunaire des données (valeurs aberrantes, unités douteuses, plan d'échantillonnage inconnu) imposent de valider le classifieur sur des données indépendantes et mieux contrôlées avant tout déploiement.
+[] -   Les données ayant été nettoyées, les performances obtenues sont directement transposables à la pratique clinique.}-")
+```
 
 # Références

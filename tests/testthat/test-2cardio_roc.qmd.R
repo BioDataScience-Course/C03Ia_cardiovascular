@@ -1,6 +1,6 @@
 # Vérifications de cardio_roc.qmd
-roc <- parse_rmd("../../cardio_roc.qmd",
-  allow_incomplete = TRUE, parse_yaml = TRUE)
+roc <- try(parsermd::parse_qmd("../../cardio_roc.qmd"))
+expect_true(TRUE, info = roc)
 
 test_that("Le bloc-notes est-il compilé en un fichier final HTML ?", {
   expect_true(is_rendered("cardio_roc.qmd"))
@@ -33,9 +33,25 @@ test_that("La structure du document est-elle conservée ?", {
   # d'origine dans le dépôt "template" du document (lien au début du fichier
   # README.md).
 
-  expect_true(all(c("setup", "import2", "split", "rf", "rf_mem", "rf_roc",
-    "rf_auc", "svm", "svm_mem", "svm_roc", "svm_auc", "roc_compa")
-    %in% rmd_node_label(roc)))
+  expect_true(all(
+    c(
+      "setup",
+      "ai_comment",
+      "import2",
+      "split",
+      "rf",
+      "rf_mem",
+      "rf_roc",
+      "rf_auc",
+      "svm",
+      "svm_mem",
+      "svm_roc",
+      "svm_auc",
+      "roc_compa",
+      "discussion"
+    ) %in%
+      rmd_node_label(roc)
+  ))
   # Un ou plusieurs labels de chunks nécessaires à l'évaluation manquent
   # Ce test échoue si vous avez modifié la structure du document, un ou
   # plusieurs chunks indispensables par rapport aux exercices sont introuvables.
@@ -52,20 +68,21 @@ test_that("La structure du document est-elle conservée ?", {
 })
 
 test_that("L'entête YAML a-t-il été complété ?", {
-  expect_true(roc[[1]]$author != "___")
-  expect_true(!grepl("__", roc[[1]]$author))
-  expect_true(grepl("^[^_]....+", roc[[1]]$author))
+  authors <- roc[[1]]@yaml[["author"]]
+  expect_true(authors != "___")
+  expect_true(!grepl("__", authors))
+  expect_true(grepl("^[^_]....+", authors))
   # Le nom d'auteur n'est pas complété ou de manière incorrecte dans l'entête
   # Vous devez indiquer votre nom dans l'entête YAML à la place de "___" et
   # éliminer les caractères '_' par la même occasion.
 
-  expect_true(grepl("[a-z]", roc[[1]]$author))
+  expect_true(grepl("[a-z]", authors))
   # Aucune lettre minuscule n'est trouvée dans le nom d'auteur
   # Avez-vous bien complété le champ 'author' dans l'entête YAML ?
   # Vous ne pouvez pas écrire votre nom tout en majuscules. Utilisez une
   # majuscule en début de nom et de prénom, et des minuscules ensuite.
 
-  expect_true(grepl("[A-Z]", roc[[1]]$author))
+  expect_true(grepl("[A-Z]", authors))
   # Aucune lettre majuscule n'est trouvée dans le nom d'auteur
   # Avez-vous bien complété le champ 'author' dans l'entête YAML ?
   # Vous ne pouvez pas écrire votre nom tout en minuscules. Utilisez une
@@ -167,12 +184,14 @@ test_that("Chunks 'svm', `svm_mem', 'svm_roc' & 'svm_auc' : machine à vecteurs 
   # du document Quarto pour revérifier.
 })
 
-test_that("La partie discussion et conclusion est-elle remplie ?", {
-  expect_true(!(rmd_select(roc, by_section("Discussion et conclusion")) |>
-    as_document() |> grepl("...votre discussion ici...", x = _,
-      fixed = TRUE) |> any()))
-  # La discussion et la conclusion ne sont pas faites
-  # Remplacez "...votre discussion ici..." par vos phrases de commentaires
-  # libres (à noter que le contenu de cette section n'est pas évalué
-  # automatiquement, mais il le sera par vos enseignants).
+test_that("Chunk 'discussion' : Discussion et conclusion", {
+  expect_true(is_identical_to_ref("discussion"))
+  # La discussion et la conclusion sont (partiellement) fausses
+  # Vous devez cocher les phrases qui discutent correctement des résultats d'un
+  # 'x' entre les crochets [] -> [x]. Ensuite, vous devez recompiler la version
+  # HTML du bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les
+  # résultats. Comparez bien les aires sous la courbe et la position relative
+  # des deux courbes ROC selon le seuil de détection.
+  # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
+  # cette aide plus tard dans le travail de groupe ou les interrogations !
 })

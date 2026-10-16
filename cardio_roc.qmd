@@ -1,7 +1,7 @@
 ---
 title: "Détection de maladies cardiovasculaires"
 subtitle: "Comparaison de classifieurs via les courbes ROC"
-author: "___"
+author: "Teachers"
 date: "`r Sys.Date()`"
 format:
   html:
@@ -10,6 +10,8 @@ format:
     toc: true
 editor: visual
 lang: fr
+svbox: 2026
+vm: "Ubuntu 24.04.3 LTS"
 bibliography: biblio/references.bib
 ---
 
@@ -33,12 +35,22 @@ Les maladies cardiovasculaires touchent 7% de la population américaine [@anatio
 
 Les données proviennent du jeu vérifié et remanié dans `cardio_propotions.qmd`. Voir ce dernier document pour les détails.
 
+<!--% Spécifier si vous avez employé l'intelligence artificielle dans votre projet. -->
+
+```{r ai_comment, output='asis'}
+select_answer(r"-{
+[] -   Ce document a été rédigé en étant assisté par l'Intelligence Artificielle.
+[] -   Ce document a été rédigé sans recours à l'Intelligence Artificielle.}-")
+```
+
+<!-- Précisez ci-dessous l'utilisation que vous avez faite de l'IA. Citez le modèle utilisé. -->
+
 # Résultats
 
 Les données sont nettoyées, et de nouvelles variables sont calculées dans `cardio_proportions.qmd`. Nous repartons ici du même jeu de données `cardio2`.
 
 ```{r import2, record='RODFS', object='cardio2'}
-cardio2 <- read("___")
+cardio2 <- read(___)
 ```
 
 <!--% Divisez votre jeu de données en cardio2_train et cardio2_test (2/3 en apprentissage, stratifié en fonction de la variable `cardio`) -->
@@ -77,7 +89,7 @@ Voici la courbe ROC pour notre classifieur à forêt aléatoire.
 ```{r rf_roc, record='ROMD5', object='cardio2_rf_perf'}
 # 1) Créer un objet prediction
 cardio2_rf_predobj <- prediction(___,
-  ___ == "présence")
+                                 ___ == "présence")
 # 2) Calculer les performances avec les deux métriques tpr et fpr
 cardio2_rf_perf <- ___
 # 3) Tracer le graphique ROC
@@ -122,7 +134,7 @@ La courbe ROC pour ce classifieur à vecteurs supports donne ceci :
 ```{r svm_roc, record='ROMD5', object='cardio2_svm_perf'}
 # 1) Créer un objet prediction
 cardio2_svm_predobj <- ___(___,
-  ___)
+                           ___)
 # 2) Calculer les performances avec les deux métriques tpr et fpr
 cardio2_svm_perf <- ___
 # 3) Tracer le graphique ROC
@@ -157,9 +169,30 @@ legend("bottomright", inset = 0.1,
 
 # Discussion et conclusion
 
-<!--% Indiquez ci-dessous en 3 phrases maximum quel classifieur vous considérez comme le meilleur, et pourquoi ? Est-il le meilleur, quel que soit le seuil de détection retenu ? -->
+<!--% Sélectionnez les phrases qui indiquent quel classifieur est le meilleur et pourquoi. Est-il le meilleur, quel que soit le seuil de détection retenu ? -->
 
-...votre discussion ici...
+```{r discussion, output='asis'}
+select_answer(r"-{
+[] -   L'aire sous la courbe ROC est légèrement plus élevée pour la machine à vecteurs supports (0.78) que pour la forêt aléatoire (0.77).
+[] -   L'aire sous la courbe ROC est légèrement plus élevée pour la forêt aléatoire (0.78) que pour la machine à vecteurs supports (0.77).
+[] -   Les aires sous la courbe ROC sont inférieures à 0.5 : les deux classifieurs font moins bien qu'un classement au hasard.
+
+[] -   Les performances des deux classifieurs sont moyennes : leurs courbes ROC sont nettement au-dessus de la diagonale, mais restent éloignées du coin supérieur gauche du graphique.
+[] -   Les performances des deux classifieurs sont excellentes : leurs courbes ROC passent près du coin supérieur gauche du graphique.
+
+[] -   Globalement, la machine à vecteurs supports est le meilleur classifieur des deux, sur base de l'aire sous la courbe ROC.
+[] -   Globalement, la forêt aléatoire est le meilleur classifieur des deux, car elle utilise 200 arbres.
+
+[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire pour des taux de faux positifs faibles à intermédiaires (jusqu'à 40% environ). Au-delà, les deux courbes sont pratiquement confondues et se croisent. La machine à vecteurs supports n'est donc pas la meilleure quel que soit le seuil de détection.
+[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire sur toute sa longueur. Elle est donc la meilleure quel que soit le seuil de détection.
+[] -   La courbe de la forêt aléatoire est au-dessus de celle de la machine à vecteurs supports sur toute sa longueur. Elle est donc la meilleure quel que soit le seuil de détection.
+
+[] -   Pour détecter les patients à risque, nous visons un taux de vrais positifs (rappel) élevé. Dans cette zone de la courbe ROC, les deux classifieurs sont équivalents et le choix peut se faire sur d'autres critères (temps de calcul, interprétabilité via l'importance des variables de la forêt aléatoire, etc.).
+[] -   Pour un taux de vrais positifs (rappel) élevé, la machine à vecteurs supports présente un taux de faux positifs nettement plus faible que la forêt aléatoire.
+
+[] -   La différence d'aire sous la courbe entre les deux classifieurs est faible (environ 0.01) et a été obtenue sur un seul set de test de 978 cas. Elle n'est peut-être pas significative et devrait être confirmée, par exemple par validation croisée.
+[] -   La différence d'aire sous la courbe de 0.01 démontre clairement la supériorité de la machine à vecteurs supports.}-")
+```
 
 <!--# Les combinaisons utilisées ici (train/test + courbes ROC) pour comparer deux algorithmes de classification, ou dans le document cardio_proportions.qmd (validation croisée et manipulation des propriétés/des priors) peuvent être recombinées à souhait. Il est possible d'utiliser la validation croisée partout, sauf si l'on a dupliqué les items, tout comme il est possible d'utiliser la séparation en set d'apprentissage et de test partout (avec des temps de calcul plus rapides) si le nombre d'items est suffisant. De même, les métriques issues de la matrice de confusion et les courbes ROC se complètent plus qu'elles ne sont en concurrence pour vous permettre de choisir le meilleur classifieur. Ici, pour l'exercice, les deux sont compartimentés dans deux fichiers différents, mais rien ne vous empêche de les utiliser de manière concomitante pour vos classifieurs binaires. -->
 
