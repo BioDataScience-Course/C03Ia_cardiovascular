@@ -171,7 +171,7 @@ legend("bottomright", inset = 0.1,
 
 <!--% Sélectionnez les phrases qui indiquent quel classifieur est le meilleur et pourquoi. Est-il le meilleur, quel que soit le seuil de détection retenu ? -->
 
-```{r discussion, output='asis'}
+```{r discussion_roc, output='asis'}
 select_answer(r"-{
 [] -   L'aire sous la courbe ROC est légèrement plus élevée pour la machine à vecteurs supports (0.78) que pour la forêt aléatoire (0.77).
 [] -   L'aire sous la courbe ROC est légèrement plus élevée pour la forêt aléatoire (0.78) que pour la machine à vecteurs supports (0.77).

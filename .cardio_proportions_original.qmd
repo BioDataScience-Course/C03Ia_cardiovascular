@@ -286,7 +286,7 @@ ___
 
 <!--% Sélectionnez les phrases qui indiquent quel classifieur est le meilleur et s'il est adéquat pour un déploiement par rapport au but fixé (en considérant à la fois le rappel et la précision des deux classifieurs réalisés, après correction des probabilités a priori). -->
 
-```{r discussion, output='asis'}
+```{r discussion_prop, output='asis'}
 select_answer(r"-{
 [] -   Après correction des probabilités *a priori*, le second classifieur (entraîné avec deux fois plus de malades que de sains) détecte nettement mieux les malades : le rappel pour la présence de la maladie passe de 68% à 83%.
 [] -   Après correction des probabilités *a priori*, le rappel pour la présence de la maladie diminue de 83% à 68% avec le second classifieur.

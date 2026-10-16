@@ -48,7 +48,7 @@ test_that("La structure du document est-elle conservée ?", {
       "svm_roc",
       "svm_auc",
       "roc_compa",
-      "discussion"
+      "discussion_roc"
     ) %in%
       rmd_node_label(roc)
   ))
@@ -185,7 +185,7 @@ test_that("Chunks 'svm', `svm_mem', 'svm_roc' & 'svm_auc' : machine à vecteurs 
 })
 
 test_that("Chunk 'discussion' : Discussion et conclusion", {
-  expect_true(is_identical_to_ref("discussion"))
+  expect_true(is_identical_to_ref("discussion_roc"))
   # La discussion et la conclusion sont (partiellement) fausses
   # Vous devez cocher les phrases qui discutent correctement des résultats d'un
   # 'x' entre les crochets [] -> [x]. Ensuite, vous devez recompiler la version

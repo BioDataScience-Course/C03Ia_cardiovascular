@@ -56,7 +56,7 @@ test_that("La structure du document est-elle conservée ?", {
       "rf_confusion2",
       "rf_metrics2",
       "rf_metrics_corr2",
-      "discussion"
+      "discussion_prop"
     ) %in%
       rmd_node_label(prop)
   ))
@@ -291,7 +291,7 @@ test_that("Chunks 'rforest2', `rf_confusion2', 'rf_metrics2' & 'rf_metrics_corr2
 })
 
 test_that("Chunk 'discussion' : Discussion et conclusion", {
-  expect_true(is_identical_to_ref("discussion"))
+  expect_true(is_identical_to_ref("discussion_prop"))
   # La discussion et la conclusion sont (partiellement) fausses
   # Vous devez cocher les phrases qui discutent correctement des résultats d'un
   # 'x' entre les crochets [] -> [x]. Ensuite, vous devez recompiler la version
