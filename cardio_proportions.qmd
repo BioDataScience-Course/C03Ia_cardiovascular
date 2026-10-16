@@ -127,11 +127,11 @@ select_answer(r"-{
 
 Sur base de mesures communément utilisées dans le domaine, nous pouvons calculer quelques variables dérivées potentiellement utiles :
 
-- L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
+-   L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
 
-- La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
+-   La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
 
-- La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
+-   La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
 
 <!--% Calculez ces trois variables dérivées supplémentaires ci-dessous. Enregistrez cardio2 au format rds dans le dossier data pour réutilisation dans le second document Quarto. -->
 
