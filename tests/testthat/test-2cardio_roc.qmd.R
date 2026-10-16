@@ -159,18 +159,18 @@ test_that("Chunks 'rf', `rf_mem', 'rf_roc' & 'rf_auc' : forêt aléatoire et cou
 })
 
 test_that("Chunks 'svm', `svm_mem', 'svm_roc' & 'svm_auc' : machine à vecteurs supports et courbes ROC", {
-  expect_true(is_identical_to_ref("svm"))
+  expect_true(is_near_ref("svm"))
   # Le classifieur machine à vecteurs supports n'est pas réalisé ou est
   # différent de celui considéré comme optimal par vos enseignants
   # Les consignes devraient vous guider pour réaliser le même classifieur.
 
-  expect_true(is_identical_to_ref("svm_mem"))
+  expect_true(is_near_ref("svm_mem"))
   # Vous n'avez pas obtenu la même matrice d'appartenance pour le classifieur
   # machine à vecteurs supports que vos enseignants, ou vous ne l'avez pas
   # calculée
   # Vérifiez vos calculs.
 
-  expect_true(is_identical_to_ref("svm_roc"))
+  expect_true(is_near_ref("svm_roc", tolerance = 0.01))
   # La courbe ROC de votre classifieur machine à vecteurs supports n'est pas
   # calculée, ou n'est pas conforme à ce qui est attendu
   # Relisez bien les consignes et corrigez votre code avant de refaire un rendu

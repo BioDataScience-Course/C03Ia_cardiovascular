@@ -122,7 +122,7 @@ Voici les probabilités d'appartenance aux deux catégories pour les six premier
 
 <!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test. -->
 
-```{r svm_mem, record='ROMD5', object='cardio2_svm_mem', fun=digest_round}
+```{r svm_mem, record='RO', object='cardio2_svm_mem', fun=membership_round}
 cardio2_svm_mem <- ___
 head(cardio2_svm_mem)
 ```
@@ -131,7 +131,7 @@ La courbe ROC pour ce classifieur à vecteurs supports donne ceci :
 
 <!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr. -->
 
-```{r svm_roc, record='ROP', object='cardio2_svm_perf', arg='y.values, class', fun=object_part_round}
+```{r svm_roc, record='RO', object='cardio2_svm_perf', fun=perf_grid_round}
 # 1) Créer un objet prediction
 cardio2_svm_predobj <- ___(___,
                            ___)
