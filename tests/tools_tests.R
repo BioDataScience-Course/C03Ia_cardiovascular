@@ -33,3 +33,20 @@ is_identical_to_ref <- function(name, part = NULL, attr = NULL) {
   isTRUE(all.equal(res, ref))
   # identical(res, ref)
 }
+
+# Erreur entre des tests passé sous Mac Os et sous Linux sur SVM
+
+list_round <- function(object, digits = 5) {
+  rapply(object, round, classes = "numeric", how = "replace", digits = digits)
+}
+
+object_part_round <- function(object, part = "x", digits = 3) {
+  res <- learnitgrid::object_part(object = object, part = part)
+  list_round(res, digits = digits)
+}
+
+digest_round <- function(object, algo = "md5", digits = 3, ...) {
+  res <- round(object, digits = 3)
+  learnitgrid::digest(res, algo = algo, ...)
+}
+

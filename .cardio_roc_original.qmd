@@ -113,7 +113,7 @@ Nous réalisons un second classifieur à vecteurs supports en utilisant un noyau
 
 <!--# La méthode SVM a beaucoup de paramètres à optimiser. Dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
 
-```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB'}
+```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB', fun=object_part_round}
 set.seed(487063)
 cardio2_svm <- ml_svm(data = ___, ___)
 ```
@@ -122,7 +122,7 @@ Voici les probabilités d'appartenance aux deux catégories pour les six premier
 
 <!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur via le set de test. -->
 
-```{r svm_mem, record='ROMD5', object='cardio2_svm_mem'}
+```{r svm_mem, record='ROMD5', object='cardio2_svm_mem', fun=digest_round}
 cardio2_svm_mem <- ___
 head(cardio2_svm_mem)
 ```
@@ -131,7 +131,7 @@ La courbe ROC pour ce classifieur à vecteurs supports donne ceci :
 
 <!--% Calculez et affichez la courbe ROC pour ce classifieur en utilisant les métriques tpr et fpr. -->
 
-```{r svm_roc, record='ROMD5', object='cardio2_svm_perf'}
+```{r svm_roc, record='ROP', object='cardio2_svm_perf', arg='y.values, class', fun=object_part_round}
 # 1) Créer un objet prediction
 cardio2_svm_predobj <- ___(___,
                            ___)
