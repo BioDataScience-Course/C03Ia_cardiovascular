@@ -20,7 +20,7 @@ bibliography: biblio/references.bib
 if (!"tools:tests" %in% search())
   source(here::here("tests/tools_tests.R"), attach(NULL, name = "tools:tests"))
 
-# Configure Knitr pour utiliser AGG comme périphérique graphique
+# Configure Knitr pour utiliser RAGG comme périphérique graphique
 knitr::opts_chunk$set(dev = "ragg_png")
 
 # Configure l’environnement SciViews::R
@@ -35,7 +35,7 @@ Le but de ce travail est de déterminer si, à partir de données générales fa
 
 # Matériel et méthodes
 
-Les données employées sont un sous-ensemble d'un jeu de données disponibles sur Kaggle ([Cardiovascular Disease dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset)) qui contient 70.000 observations (voir \`R/import_cardio.R\`). Diverses informations ont été collectées sur des patients atteints ou non de maladies cardiovasculaires. Ces données sont en partie fournies par le patient lui-même et en parties issues d'un bilan médical. Les variables sont décrites (métadonnées), mais l'origine et le plan d'échantillonnage ne sont pas indiqués. Nous considérerons la situation la plus probable qui est que ces données proviennent d'un système informatisé de gestion de dossiers médicaux à l'échelle d'une région ou d'un pays (la taille de l'échantillon permet de considérer que cela concerne probablement plus d'un seul hôpital, aussi grand soit-il). Étant donné la répartition en sous-groupes, notamment pour la présence ou l'absence de maladie cardiovasculaire (à peu près 50%/50%, voir description des données), l'échantillonnage n'est certainement pas aléatoire. Il est probable qu'il soit stratifié par rapport à ce critère. En absence de plus d'information, nous le traiterons comme tel.
+Les données employées sont un sous-ensemble d'un jeu de données disponibles sur Kaggle ([Cardiovascular Disease dataset](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset)) qui contient 70.000 observations (voir \`R/import_cardio.R\`). Diverses informations ont été collectées sur des patients atteints ou non de maladies cardiovasculaires. Ces données sont en partie fournies par le patient lui-même et en partie issues d'un bilan médical. Les variables sont décrites (métadonnées), mais l'origine et le plan d'échantillonnage ne sont pas indiqués. Nous considérerons la situation la plus probable qui est que ces données proviennent d'un système informatisé de gestion de dossiers médicaux à l'échelle d'une région ou d'un pays (la taille de l'échantillon permet de considérer que cela concerne probablement plus d'un seul hôpital, aussi grand soit-il). Étant donné la répartition en sous-groupes, notamment pour la présence ou l'absence de maladie cardiovasculaire (à peu près 50%/50%, voir description des données), l'échantillonnage n'est certainement pas aléatoire. Il est probable qu'il soit stratifié par rapport à ce critère. En absence de plus d'information, nous le traiterons comme tel.
 
 L'analyse est réalisée dans la [SciViews Box `r rmarkdown::metadata$svbox`](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (`r rmarkdown::metadata$vm`) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {mlearning} version `r packageVersion("mlearning")` est utilisé pour entraîner et mesurer les performances des classifieurs.
 
@@ -65,21 +65,21 @@ skimr::skim(cardio)
 ```{r importcomment, output='asis'}
 select_answer(r"-{
 [] -   Le jeu de données contient 3000 cas et 13 attributs, dont 7 sont qualitatifs et 6 sont quantitatifs.
-[] -   Le jeu de données contient 3000 cas et 13 variables, dont 6 attributs qualitatifs et 6 attributs quantitatifs.
 [] -   Le jeu de données contient 3000 cas et 13 variables, dont 6 attributs qualitatifs et 5 attributs quantitatifs.
+[] -   Le jeu de données contient 3000 cas et 13 variables, dont 6 attributs qualitatifs et 6 attributs quantitatifs.
 
-[] -   Aucune donnée n'est manquante.
 [] -   Une donnée est manquante.
+[] -   Aucune donnée n'est manquante.
 [] -   Plusieurs données sont manquantes.
 
-[] -   Les données quantitatives sont toutes dans des plages de valeurs plausibles.
-[] -   L’âge étant exprimé en jours, nous le convertirons en années pour plus de lisibilité.
-[] -   Une ou plusieurs données de taille sont aberrantes, car la taille minimale est de 74cm alors que l'âge minimal est de 14327 jours, soit 14327/365 = 39 ans.
 [] -   Les masses ne correspondent pas à l'unité annoncée (le kg) car elles varient de 410 à 1600. Il est probable qu'elles soient exprimées en 1/10 de kg. Nous les convertirons en kg.
-[] -   Les mesures de tension artérielle semblent correctes. L'unité n'est pas précisée, mais nous assumerons qu'il s'agit de mmHg
+[] -   Une ou plusieurs données de taille sont aberrantes, car la taille minimale est de 74cm alors que l'âge minimal est de 14327 jours, soit 14327/365 = 39 ans.
+[] -   Les données quantitatives sont toutes dans des plages de valeurs plausibles.
+[] -   Les mesures de tension artérielle semblent correctes. L'unité n'est pas précisée, mais nous assumerons qu'il s'agit de mmHg.
+[] -   L’âge étant exprimé en jours, nous le convertirons en années pour plus de lisibilité.
 [] -   Nous observons des données aberrantes dans les tensions artérielles avec des minima de 10 pour la pression systolique `ap_hi` et pour la pression diastolique `ap_lo`. L'unité n'est pas précisée, mais nous considérerons qu'il s'agit de mmHg.
-[] -   De même les maxima pour les tensions artérielles sont irréalistes avec 240 pour la pression systolique et 9011 pour la pression diastolique.
-[] -   De manière générale, nous devons être attentif aux valeurs erronées et rester suspicieux quant à l'échantillonnage, les unités des variables quantitatives et la validité globale des données qui apparaissent peu documentées et pas du tout vérifiées.}-")
+[] -   De même les maxima pour les tensions artérielles sont très peu probables avec 240 pour la pression systolique et 9011 pour la pression diastolique.
+[] -   De manière générale, nous devons être attentifs aux valeurs erronées et rester suspicieux quant à l'échantillonnage, les unités des variables quantitatives et la validité globale des données qui apparaissent peu documentées et pas du tout vérifiées.}-")
 ```
 
 ## Feature engineering
@@ -88,7 +88,7 @@ En absence d'informations supplémentaires et dans l'impossibilité de vérifier
 
 <!--# Ce jeu de données contient pas mal d'erreurs et est peu documenté. Il est pourtant considéré sur Kaggle comme intéressant (et nous partageons cet avis). En effet, il est représentatif de données réelles issues de la compilation de diverses sources avant nettoyage. Ceci est très loin des jeux de données "exemples" souvent utilisés en cours de statistique où tout paraît parfait d'emblée. À notre avis, il est bien plus instructif de travailler avec ce genre de données plus proches de la réalité ! -->
 
-<!--% Convertissez `age` en années (une année comprend environ 365 jours), `weight` en kg (réellement en kg !), et retirez `id`. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus 130cm, avec une pression systolique supérieure à 60 et inférieure à 220 et une pression diastolique supérieure à 50 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
+<!--% Convertissez `age` en années (une année comprend environ 365 jours), `weight` en kg (réellement en kg !), et retirez `id`. Éliminez les données aberrantes en ne gardant que les individus (adultes) de plus de 130 cm, avec une pression systolique supérieure à 60 et inférieure à 220 et une pression diastolique supérieure à 50 et inférieure à 150. Éliminez aussi les données où la pression diastolique est supérieure ou égale à la systolique. -->
 
 ```{r clean, record='RODFS', object='cardio2'}
 cardio %>.%
@@ -117,21 +117,21 @@ plot(cardio2_corr)
 
 ```{r corrcomment, output='asis'}
 select_answer(r"-{
-[] -   Les corrélations de Spearman vont de 0.02 à 0.72.
-[] -   Les corrélations de Pearson vont de 0.02 à 0.72.
-[] -   Les corrélations de Kendall vont de 0.02 à 0.72.
+[] -   Les corrélations de Pearson vont, en valeur absolue, de 0.02 à 0.72.
+[] -   Les corrélations de Kendall vont, en valeur absolue, de 0.02 à 0.72.
+[] -   Les corrélations de Spearman vont, en valeur absolue, de 0.02 à 0.72.
 
-[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques, mais avec 0.72, elles restent raisonnables.
-[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques. À 0.72 il y a redondance entre les deux variables et il vaut mieux en éliminer une des deux.}-")
+[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques. À 0.72 il y a redondance entre les deux variables et il vaut mieux en éliminer une des deux.
+[] -   Les plus fortes corrélations sont entre les pressions systoliques et diastoliques, mais avec 0.72, elles restent raisonnables.}-")
 ```
 
 Sur base de mesures communément utilisées dans le domaine, nous pouvons calculer quelques variables dérivées potentiellement utiles :
 
--   L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
+- L'indice de masse corporelle (\`bmi\`), bien plus utile que la taille et la masse considérées séparément
 
--   La pression de poul (\`pulse\`) est la différence entre la pression systolique et diastolique
+- La pression de pouls (\`pulse\`) est la différence entre la pression systolique et diastolique
 
--   La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
+- La pression artérielle moyenne (\`map\`) est (pression systolique + 2\*pression diastolique) / 3
 
 <!--% Calculez ces trois variables dérivées supplémentaires ci-dessous. Enregistrez cardio2 au format rds dans le dossier data pour réutilisation dans le second document Quarto. -->
 
@@ -139,7 +139,7 @@ Sur base de mesures communément utilisées dans le domaine, nous pouvons calcul
 cardio2 %>.%
   smutate(.,
           bmi   = labelise(___, label = "IMC", units = "kg/m^2"),
-          pulse = labelise(___, label = "Pression de poul", units = "mmHg"),
+          pulse = labelise(___, label = "Pression de pouls", units = "mmHg"),
           map   = labelise((___, label = "Pression artérielle moyenne", units = "mmHg")) ->
             cardio2
           write$rds(cardio2, "data/cardio2.rds")
@@ -171,13 +171,13 @@ select_answer(r"-{
 [] -   La proportion d'hommes et de femmes est égale dans les données.
 [] -   La proportion d'hommes et de femmes est inégale.
 
-[] -   Les proportions des patients sont en adéquation avec la prévalence de ces maladies aux USA.
-[] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes saines sont surreprésentées.
 [] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes malades sont surreprésentées.
+[] -   Les proportions des patients ne sont pas en adéquation avec la prévalence de ces maladies aux USA. Les personnes saines sont surreprésentées.
+[] -   Les proportions des patients sont en adéquation avec la prévalence de ces maladies aux USA.
 
-[] - Plus les personnes sont âgées, plus elles sont susceptibles d’être malades.
-[] - Plus les personnes sont âgées, moins elles sont susceptibles d’être malades.
-[] - La présence de maladies cardiovasculaires est identique au cours du temps.}-")
+[] -   Plus les personnes sont âgées, moins elles sont susceptibles d’être malades.
+[] -   La présence de maladies cardiovasculaires est identique quel que soit l'âge.
+[] -   Plus les personnes sont âgées, plus elles sont susceptibles d’être malades.}-")
 ```
 
 <!--# Il est encore possible de faire pas mal d'autres observations sur ces données (voyez par exemple ici : https://www.kaggle.com/code/sulianova/eda-cardiovascular-data pour une analyse complète du jeu de données original de 70.000 observations réalisée en Python). Comprenez bien que la partie "feature engineering" est cruciale dans les performances obtenues ensuite pour votre classifieur. Cependant, il est temps maintenant de nous attaquer à l'élément central de ce projet : la classification et l'impact des proportions par classes sur les résultats. -->
@@ -205,7 +205,7 @@ plot(cardio2_rf_conf)
 summary(___, type = ___)
 ```
 
-Les proportions entre malades et non malades sont à peu près balancées dans le set d'apprentissage (et donc de test, puisque celui-ci est réalisé par validation croisée), ceci ne correspond pas aux performances attendues du classifieur en déploiement. Sur base de la prévalence des maladies cardiovasculaires aux USA, nous devons ajuster les probabilités *a priori* pour obtenir des métriques plus fidèles.
+Les proportions entre malades et non malades sont à peu près équilibrées dans le set d'apprentissage (et donc de test, puisque celui-ci est réalisé par validation croisée). Ceci ne correspond pas à la situation rencontrée en déploiement : les métriques obtenues ne reflètent donc pas les performances attendues du classifieur. Sur base de la prévalence des maladies cardiovasculaires aux USA, nous devons ajuster les probabilités *a priori* pour obtenir des métriques plus fidèles.
 
 <!--% Sachant que la prévalence des maladies cardio-vasculaires aux USA est de 7% (cf https://www.ncbi.nlm.nih.gov/books/NBK83160/), et en ignorant les différences entre homme et femme, corrigez vos métriques en ajustant les probabilités a priori. -->
 
@@ -227,7 +227,7 @@ ___
 select_answer(r"-{
 [] -   L'âge est le facteur le plus important, suivi de l'IMC.
 [] -   La taille et la masse sont également importantes isolément de l'IMC.
-[] -   La pression systolique et la pression artérielle moyenne sont également déterminantes, plus que la pression diastolique ou de poul.
+[] -   La pression systolique et la pression artérielle moyenne sont également déterminantes, plus que la pression diastolique ou de pouls.
 [] -   Le cholestérol dans le sang, bien qu'ayant un effet moindre, joue aussi un rôle.
 [] -   Le glucose dans le sang, l'activité physique, le genre, le fait de fumer ou de boire de l'alcool ne semblent pas ou peu être des indicateurs de développement de maladies cardiovasculaires.}-")
 ```
@@ -236,7 +236,7 @@ select_answer(r"-{
 
 Notre but étant de détecter les patients *à risque* de maladies cardiovasculaires, nous souhaitons maximiser le rappel pour la présence de la maladie. Ici, la réduction de la précision (fausses alertes) n'est pas grave, car les patients retenus subiront des analyses plus approfondies ensuite, qui permettront de séparer les vrais des faux positifs. Une des façons d'y arriver est de modifier les proportions des deux classes dans le set d'apprentissage. Ici, nous nous arrangeons pour avoir deux fois plus de cas malades que de cas sains et nous créons un nouveau classifieur.
 
-<!--% Sélectionnez la moitié des patients négatifs au hasard et la totalité des patients positifs. Employez la fonction over_undersample() pour ce faire. Cette sélection sera  assignée à cardio3. -->
+<!--% Sélectionnez la moitié des patients négatifs au hasard et la totalité des patients positifs. Employez la fonction over_undersample() pour ce faire. Cette sélection sera assignée à cardio3. -->
 
 ```{r cardio_prop, record='RODFS', object='cardio3', warning=FALSE}
 # Récupération de la fonction over_undersample() depuis R/functions.R
@@ -288,29 +288,29 @@ ___
 
 ```{r discussion_prop, output='asis'}
 select_answer(r"-{
+[] -   Le rappel pour la présence de la maladie est identique pour les deux classifieurs, seule la précision varie.
 [] -   Après correction des probabilités *a priori*, le second classifieur (entraîné avec deux fois plus de malades que de sains) détecte nettement mieux les malades : le rappel pour la présence de la maladie passe de 68% à 83%.
 [] -   Après correction des probabilités *a priori*, le rappel pour la présence de la maladie diminue de 83% à 68% avec le second classifieur.
-[] -   Le rappel pour la présence de la maladie est identique pour les deux classifieurs, seule la précision varie.
 
-[] -   Ce gain se paie par une baisse de la précision pour la présence de la maladie, qui passe de 17% à 13%. Environ 87% des patients signalés comme malades sont donc des faux positifs.
-[] -   Le second classifieur améliore à la fois le rappel et la précision pour la présence de la maladie.
 [] -   La précision pour la présence de la maladie reste supérieure à 70% pour les deux classifieurs.
+[] -   Le second classifieur améliore à la fois le rappel et la précision pour la présence de la maladie.
+[] -   Ce gain se paie par une baisse de la précision pour la présence de la maladie, qui passe de 17% à 13%. Environ 87% des patients signalés comme malades sont donc des faux positifs.
 
 [] -   Sans correction des probabilités *a priori*, la précision pour la présence de la maladie serait largement surestimée (73% et 80% au lieu de 17% et 13%), car la prévalence réelle (7%) est bien plus faible que dans les sets d'apprentissage.
 [] -   La correction des probabilités *a priori* n'est pas nécessaire puisque les métriques sont calculées par validation croisée.
 
-[] -   Le taux d'erreur global (39% contre 25%) et le score F pour la présence de la maladie (0.23 contre 0.28) sont moins bons pour le second classifieur, mais ces métriques ne correspondent pas à l'objectif fixé.
+[] -   Le taux d'erreur global (39% pour le second classifieur contre 25% pour le classifieur initial) et le score F pour la présence de la maladie (0.23 pour le second classifieur contre 0.28 pour le classifieur initial) sont moins bons pour le second classifieur, mais ces métriques ne correspondent pas à l'objectif fixé.
 [] -   Le taux d'erreur global et le score F étant meilleurs pour le classifieur initial, c'est lui qu'il faut retenir.
 
-[] -   Le second classifieur est le meilleur par rapport au but fixé (détecter les patients à risque), car le rappel pour la présence de la maladie est la métrique à maximiser et la perte de précision est acceptable : les faux positifs seront écartés par des analyses plus approfondies.
 [] -   Le classifieur initial est le meilleur, car il a été entraîné sur des proportions balancées entre malades et non malades.
+[] -   Le second classifieur est le meilleur par rapport au but fixé (détecter les patients à risque), car le rappel pour la présence de la maladie est la métrique à maximiser et la perte de précision est acceptable : les faux positifs seront écartés par des analyses plus approfondies.
 
 [] -   Le second classifieur constitue une bonne base pour un dépistage de première ligne, mais il manque encore environ un malade sur six. Il serait souhaitable d'augmenter encore le rappel (par exemple, en déséquilibrant davantage les proportions dans le set d'apprentissage) avant un déploiement.
-[] -   Avec un rappel de 83%, le second classifieur ne manque pratiquement aucun malade et peut être déployé tel quel.
 [] -   Avec une précision de seulement 13%, le second classifieur est inutilisable en pratique.
+[] -   Avec un rappel de 83%, le second classifieur ne manque pratiquement aucun malade et peut être déployé tel quel.
 
-[] -   La qualité médiocre et la documentation lacunaire des données (valeurs aberrantes, unités douteuses, plan d'échantillonnage inconnu) imposent de valider le classifieur sur des données indépendantes et mieux contrôlées avant tout déploiement.
-[] -   Les données ayant été nettoyées, les performances obtenues sont directement transposables à la pratique clinique.}-")
+[] -   Les données ayant été nettoyées, les performances obtenues sont directement transposables à la pratique clinique.
+[] -   La qualité médiocre et la documentation lacunaire des données (valeurs aberrantes, unités douteuses, plan d'échantillonnage inconnu) imposent de valider le classifieur sur des données indépendantes et mieux contrôlées avant tout déploiement.}-")
 ```
 
 # Références

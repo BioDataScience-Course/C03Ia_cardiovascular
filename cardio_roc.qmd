@@ -1,7 +1,7 @@
 ---
 title: "Détection de maladies cardiovasculaires"
 subtitle: "Comparaison de classifieurs via les courbes ROC"
-author: "Teachers"
+author: "___"
 date: "`r Sys.Date()`"
 format:
   html:
@@ -33,7 +33,7 @@ Les maladies cardiovasculaires touchent 7% de la population américaine [@anatio
 
 # Matériel et méthodes
 
-Les données proviennent du jeu vérifié et remanié dans `cardio_propotions.qmd`. Voir ce dernier document pour les détails.
+Les données proviennent du jeu vérifié et remanié dans `cardio_proportions.qmd`. Voir ce dernier document pour les détails.
 
 <!--% Spécifier si vous avez employé l'intelligence artificielle dans votre projet. -->
 
@@ -66,14 +66,14 @@ cardio2_test <- ___
 
 Nous entraînons un classifieur par forêt aléatoire et étudions ses performances sur base de courbes ROC.
 
-<!--% Entraînez un classifieur par forêt aléatoire sur cardio_train afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 200 (considérez que vous avez obtenu cette valeur sur base d'une optimisation étape par étape de votre classifieur). -->
+<!--% Entraînez un classifieur par forêt aléatoire sur cardio2_train afin de prédire la variable `cardio`. Limitez le nombre d'arbres à 200 (considérez que vous avez obtenu cette valeur sur base d'une optimisation étape par étape de votre classifieur). -->
 
 ```{r rf, record='ROP', object='cardio2_rf', arg='ntree,mtry'}
 set.seed(15416549)
 cardio2_rf <- ml_rforest(data = ___,  ___)
 ```
 
-Les probabilités d'appartenance aux deux catégories relatives aux maladies cardiovasculaires sont calculées. Voici ci-dessous les résultats pour six cas du set de test :
+Les probabilités d'appartenance aux deux catégories relatives aux maladies cardiovasculaires sont calculées. Voici ci-dessous les résultats pour les six premiers cas du set de test :
 
 <!--% Calculez les probabilités d'appartenance aux classes à partir de votre classifieur en utilisant le set de test -->
 
@@ -99,7 +99,7 @@ abline(a = 0, b = 1, lty = 2)
 
 L'aire sous la courbe est :
 
-<!-- Calculez l'aire sous la courbe ROC. -->
+<!--% Calculez l'aire sous la courbe ROC. -->
 
 ```{r rf_auc, record='RNA', arg='class'}
 ___
@@ -111,7 +111,7 @@ Nous réalisons un second classifieur à vecteurs supports en utilisant un noyau
 
 <!--% Entraînez un second classifieur à l'aide de la machine à vecteurs supports avec le même set d'apprentissage -->
 
-<!--# La méthode SVM a beaucoup de paramètres à optimiser. Dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec courbe ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
+<!--# La méthode SVM a beaucoup de paramètres à optimiser. Dans le cadre de cet exercice, commencez par la version avec tous les paramètres par défaut, et donc, un noyau radial. S'il reste du temps quand vous avez tout fini, vous pouvez explorer d'autres valeurs des paramètres et comparer toujours avec les courbes ROC les versions originale et optimisée (vous pouvez ajouter une troisième courbe sur le graphique final du document). -->
 
 ```{r svm, record='ROP', object='cardio2_svm', arg='probA,probB', fun=object_part_round}
 set.seed(487063)
@@ -144,7 +144,7 @@ abline(a = 0, b = 1, lty = 2)
 
 L'aire sous la courbe est :
 
-<!-- Calculez l'aire sous la courbe ROC. -->
+<!--% Calculez l'aire sous la courbe ROC. -->
 
 ```{r svm_auc, record='RNA', arg='class'}
 ___
@@ -173,27 +173,27 @@ legend("bottomright", inset = 0.1,
 
 ```{r discussion_roc, output='asis'}
 select_answer(r"-{
-[] -   L'aire sous la courbe ROC est légèrement plus élevée pour la machine à vecteurs supports (0.78) que pour la forêt aléatoire (0.77).
 [] -   L'aire sous la courbe ROC est légèrement plus élevée pour la forêt aléatoire (0.78) que pour la machine à vecteurs supports (0.77).
+[] -   L'aire sous la courbe ROC est légèrement plus élevée pour la machine à vecteurs supports (0.78) que pour la forêt aléatoire (0.77).
 [] -   Les aires sous la courbe ROC sont inférieures à 0.5 : les deux classifieurs font moins bien qu'un classement au hasard.
 
 [] -   Les performances des deux classifieurs sont moyennes : leurs courbes ROC sont nettement au-dessus de la diagonale, mais restent éloignées du coin supérieur gauche du graphique.
 [] -   Les performances des deux classifieurs sont excellentes : leurs courbes ROC passent près du coin supérieur gauche du graphique.
 
-[] -   Globalement, la machine à vecteurs supports est le meilleur classifieur des deux, sur base de l'aire sous la courbe ROC.
 [] -   Globalement, la forêt aléatoire est le meilleur classifieur des deux, car elle utilise 200 arbres.
+[] -   Globalement, la machine à vecteurs supports est légèrement meilleure, sur base de l'aire sous la courbe ROC.
 
-[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire pour des taux de faux positifs faibles à intermédiaires (jusqu'à 40% environ). Au-delà, les deux courbes sont pratiquement confondues et se croisent. La machine à vecteurs supports n'est donc pas la meilleure quel que soit le seuil de détection.
-[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire sur toute sa longueur. Elle est donc la meilleure quel que soit le seuil de détection.
 [] -   La courbe de la forêt aléatoire est au-dessus de celle de la machine à vecteurs supports sur toute sa longueur. Elle est donc la meilleure quel que soit le seuil de détection.
+[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire pour des taux de faux positifs faibles à intermédiaires (jusqu'à 45% environ). Au-delà, les deux courbes sont pratiquement confondues et se croisent. La machine à vecteurs supports n'est donc pas la meilleure quel que soit le seuil de détection.
+[] -   La courbe de la machine à vecteurs supports est au-dessus de celle de la forêt aléatoire sur toute sa longueur. Elle est donc la meilleure quel que soit le seuil de détection.
 
-[] -   Pour détecter les patients à risque, nous visons un taux de vrais positifs (rappel) élevé. Dans cette zone de la courbe ROC, les deux classifieurs sont équivalents et le choix peut se faire sur d'autres critères (temps de calcul, interprétabilité via l'importance des variables de la forêt aléatoire, etc.).
 [] -   Pour un taux de vrais positifs (rappel) élevé, la machine à vecteurs supports présente un taux de faux positifs nettement plus faible que la forêt aléatoire.
+[] -   Pour détecter les patients à risque, nous visons un taux de vrais positifs (rappel) élevé. Dans cette zone de la courbe ROC, les deux classifieurs sont équivalents et le choix peut se faire sur d'autres critères (temps de calcul, interprétabilité via l'importance des variables de la forêt aléatoire, etc.).
 
 [] -   La différence d'aire sous la courbe entre les deux classifieurs est faible (environ 0.01) et a été obtenue sur un seul set de test de 978 cas. Elle n'est peut-être pas significative et devrait être confirmée, par exemple par validation croisée.
 [] -   La différence d'aire sous la courbe de 0.01 démontre clairement la supériorité de la machine à vecteurs supports.}-")
 ```
 
-<!--# Les combinaisons utilisées ici (train/test + courbes ROC) pour comparer deux algorithmes de classification, ou dans le document cardio_proportions.qmd (validation croisée et manipulation des propriétés/des priors) peuvent être recombinées à souhait. Il est possible d'utiliser la validation croisée partout, sauf si l'on a dupliqué les items, tout comme il est possible d'utiliser la séparation en set d'apprentissage et de test partout (avec des temps de calcul plus rapides) si le nombre d'items est suffisant. De même, les métriques issues de la matrice de confusion et les courbes ROC se complètent plus qu'elles ne sont en concurrence pour vous permettre de choisir le meilleur classifieur. Ici, pour l'exercice, les deux sont compartimentés dans deux fichiers différents, mais rien ne vous empêche de les utiliser de manière concomitante pour vos classifieurs binaires. -->
+<!--# Les combinaisons utilisées ici (train/test + courbes ROC) pour comparer deux algorithmes de classification, ou dans le document cardio_proportions.qmd (validation croisée et manipulation des proportions/des priors) peuvent être recombinées à souhait. Il est possible d'utiliser la validation croisée partout, sauf si l'on a dupliqué les items, tout comme il est possible d'utiliser la séparation en set d'apprentissage et de test partout (avec des temps de calcul plus rapides) si le nombre d'items est suffisant. De même, les métriques issues de la matrice de confusion et les courbes ROC se complètent plus qu'elles ne sont en concurrence pour vous permettre de choisir le meilleur classifieur. Ici, pour l'exercice, les deux sont compartimentés dans deux fichiers différents, mais rien ne vous empêche de les utiliser de manière concomitante pour vos classifieurs binaires. -->
 
 # Références
